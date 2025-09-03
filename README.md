@@ -1,172 +1,23 @@
 # Vehicle Type Detection API
 
-Modern bir FastAPI uygulaması ile araç türü tespiti yapan AI destekli servis. **Hexagonal Architecture** tasarım deseni kullanarak **PyTorch** ve **OpenVINO** engine'lerini destekler.
-
-## 🚀 Özellikler
-
-- **🎯 Hexagonal Architecture**: Clean Architecture ile temiz kod yapısı
-- **🤖 Çoklu AI Engine**: PyTorch (YOLOv8) ve Intel OpenVINO desteği
-- **⚡ Singleton Pattern**: Thread-safe model yükleme optimizasyonu
-- **💉 Dependency Injection**: FastAPI Depends ile temiz bağımlılık yönetimi
-- **⚙️ Cached Settings**: Pydantic Settings ile performans optimizasyonu
-- **🎪 FastAPI 2.0**: Modern RESTful API framework
-- **📋 5 Araç Türü**: Car, Motorcycle, Truck, Bus, Bicycle
-- **🐳 Docker Desteği**: Konteyner tabanlı deployment
-- **📚 Swagger/ReDoc**: Otomatik API dokümantasyonu
-
-## 🤖 Desteklenen AI Engines
-
-### PyTorch (Ultralytics YOLOv8)
-- **Model**: `models/best.pt`
-- **Backend**: PyTorch + Ultralytics
-- **Avantaj**: Yüksek doğruluk, GPU desteği
-- **Endpoints**:
-  - `/api/v2/pytorch/detect` - JSON sonuç
-  - `/api/v2/pytorch/detect/annotated` - Annotated görsel
-
-### OpenVINO (Intel Optimized)
-- **Model**: `models/best_openvino_model/`
-- **Backend**: Intel OpenVINO Runtime
-- **Avantaj**: CPU optimizasyonu, hızlı inference
-- **Endpoints**:
-  - `/api/v2/openvino/detect` - JSON sonuç
-  - `/api/v2/openvino/detect/annotated` - Annotated görsel
-
-## 🛠️ Hızlı Başlangıç
-
-### 1. Bağımlılıkları Yükle
-
-```bash
-make install
-```
-
-### 2. API'yi Çalıştır
-
-```bash
-make run-hexagonal
-```
-
-### 3. API'yi Test Et
-
-```bash
-# Health check
-curl http://localhost:8000/api/v2/health
-
-# OpenVINO ile tespit
-curl -X POST "http://localhost:8000/api/v2/openvino/detect" \
-     -H "Content-Type: multipart/form-data" \
-     -F "file=@samples/27.jpg"
-
-# PyTorch ile tespit
-curl -X POST "http://localhost:8000/api/v2/pytorch/detect" \
-     -H "Content-Type: multipart/form-data" \
-     -F "file=@samples/27.jpg"
-```
-
-### 4. API'yi Durdur
-
-```bash
-make stop-hexagonal
-```
-
-API: http://localhost:8000 | Docs: http://localhost:8000/docs
-
-## 📡 API Endpoints
-
-### Ana Endpoints
-- **GET** `/` - API bilgileri ve versiyon detayları
-- **GET** `/api/v2/health` - Tüm engine'lerin durumu
-- **GET** `/api/v2/ready` - Hazır engine'lerin listesi
-
-### PyTorch Engine
-- **GET** `/api/v2/pytorch/classes` - Desteklenen sınıflar
-- **POST** `/api/v2/pytorch/detect` - Araç tespiti (JSON)
-- **POST** `/api/v2/pytorch/detect/annotated` - Annotated görsel
-
-### OpenVINO Engine
-- **GET** `/api/v2/openvino/classes` - Desteklenen sınıflar
-- **POST** `/api/v2/openvino/detect` - Araç tespiti (JSON)
-- **POST** `/api/v2/openvino/detect/annotated` - Annotated görsel
-
-## 💻 Kullanım Örnekleri
-
-### 1. Health Check
-
-```bash
-curl http://localhost:8000/api/v2/health
-```
-
-**Response:**
-```json
-{
-  "status": "healthy",
-  "version": "2.0.0",
-  "engines": ["PyTorch", "OpenVINO"],
-  "adapters": {
-    "pytorch": {
-      "available": true,
-      "ready": true,
-      "model_type": "PyTorch YOLO"
-    },
-    "openvino": {
-      "available": true,
-      "ready": true,
-      "model_type": "OpenVINO YOLO"
-    }
-  }
-}
-```
-
-### 2. OpenVINO ile Araç Tespiti
-
-```bash
-curl -X POST "http://localhost:8000/api/v2/openvino/detect?confidence_threshold=0.5" \
-     -H "Content-Type: multipart/form-data" \
-     -F "file=@samples/27.jpg"
-```
-
-### 3. PyTorch ile Araç Tespiti
-
-```bash
-curl -X POST "http://localhost:8000/api/v2/pytorch/detect" \
-     -H "Content-Type: multipart/form-data" \
-     -F "file=@samples/27.jpg"
-```
-
-### 4. Annotated Görsel Alma
-
-```bash
-# OpenVINO annotated
-curl -X POST "http://localhost:8000/api/v2/openvino/detect/annotated" \
-     -H "Content-Type: multipart/form-data" \
-     -F "file=@samples/27.jpg" \
-     --output annotated_openvino.jpg
-
-# PyTorch annotated
-curl -X POST "http://localhost:8000/api/v2/pytorch/detect/annotated" \
-     -H "Content-Type: multipart/form-data" \
-     -F "file=@samples/27.jpg" \
-     --output annotated_pytorch.jpg
-```
-
-### 5. Python ile Kullanım
+AI-powered vehicle type detection service built with modern FastAPI application. Supports **PyTorch** and **OpenVINO** eng### 5. Usage with Python
 
 ```python
 import requests
 
-# OpenVINO ile araç tespiti
+# Vehicle detection with OpenVINO
 with open('vehicle_image.jpg', 'rb') as f:
     files = {'file': f}
     response = requests.post(
-        'http://localhost:8000/api/v2/openvino/detect',
+        'http://localhost:8000/api/v1/openvino/detect',
         files=files,
         params={'confidence_threshold': 0.5}
     )
     result = response.json()
-    print(f"Tespit edilen araç sayısı: {len(result['detections'])}")
+    print(f"Number of detected vehicles: {len(result['detections'])}")
 ```
 
-## 🎯 Mimari Tasarım
+## 🎯 Architecture Design
 
 ### Hexagonal Architecture
 
@@ -185,18 +36,215 @@ with open('vehicle_image.jpg', 'rb') as f:
 └─────────────────────────────────────────────┘
 ```
 
-### Temel Prensipler
+### Core Principles
 
-- **🔌 Ports & Adapters**: Interface'ler ve implementasyonlar ayrı
-- **💉 Dependency Injection**: FastAPI Depends ile temiz bağımlılık yönetimi
-- **⚡ Singleton Pattern**: Thread-safe model optimizasyonu
-- **⚙️ Configuration Caching**: `@lru_cache` ile settings optimizasyonu
-- **🧪 Testability**: Mock'lanabilir interface'ler
-- **🔄 Separation of Concerns**: Her katman tek sorumluluğa sahip
+- **🔌 Ports & Adapters**: Separate interfaces and implementations
+- **💉 Dependency Injection**: Clean dependency management with FastAPI Depends
+- **⚡ Singleton Pattern**: Thread-safe model optimization
+- **⚙️ Configuration Caching**: Settings optimization with `@lru_cache`
+- **🧪 Testability**: Mockable interfaces
+- **🔄 Separation of Concerns**: Each layer has single responsibility
 
-## 📊 Response Formatları
+## 📊 Response Formats
 
-### Araç Tespiti Yanıtı
+### Vehicle Detection Responsegonal Architecture** design pattern.
+
+## 🚀 Features
+
+- **🎯 Hexagonal Architecture**: Clean code structure with Clean Architecture
+- **🤖 Multi AI Engine**: PyTorch (YOLOv8) and Intel OpenVINO support
+- **⚡ Singleton Pattern**: Thread-safe model loading optimization
+- **💉 Dependency Injection**: Clean dependency management with FastAPI Depends
+- **⚙️ Cached Settings**: Performance optimization with Pydantic Settings
+- **🎪 FastAPI 2.0**: Modern RESTful API framework
+- **📋 5 Vehicle Types**: Car, Motorcycle, Truck, Bus, Bicycle
+- **🐳 Docker Support**: Container-based deployment
+- **📚 Swagger/ReDoc**: Automatic API documentation
+
+## 🤖 Supported AI Engines
+
+### PyTorch (Ultralytics YOLOv8)
+- **Model**: `models/best.pt`
+- **Backend**: PyTorch + Ultralytics
+- **Advantage**: High accuracy, GPU support
+- **Endpoints**:
+  - `/api/v1/pytorch/detect` - JSON response
+  - `/api/v1/pytorch/detect/annotated` - Annotated image
+
+### OpenVINO (Intel Optimized)
+- **Model**: `models/best_openvino_model/`
+- **Backend**: Intel OpenVINO Runtime
+- **Advantage**: CPU optimization, fast inference
+- **Endpoints**:
+  - `/api/v1/openvino/detect` - JSON response
+  - `/api/v1/openvino/detect/annotated` - Annotated image
+
+## 🛠️ Quick Start
+
+### 1. Install Dependencies
+
+```bash
+make install
+```
+
+### 2. API'yi Çalıştır
+
+```bash
+make run-hexagonal
+```
+
+### 3. API'yi Test Et
+
+```bash
+```bash
+# Health check
+curl http://localhost:8000/api/v1/health
+
+# OpenVINO detection
+curl -X POST "http://localhost:8000/api/v1/openvino/detect" \
+     -H "Content-Type: multipart/form-data" \
+     -F "file=@samples/27.jpg"
+
+# PyTorch detection
+curl -X POST "http://localhost:8000/api/v1/pytorch/detect" \
+     -H "Content-Type: multipart/form-data" \
+     -F "file=@samples/27.jpg"
+```
+
+### 4. Stop the API
+
+```bash
+make stop-hexagonal
+```
+
+API: http://localhost:8000 | Docs: http://localhost:8000/docs
+
+## 📡 API Endpoints
+
+### Main Endpoints
+- **GET** `/` - API information and version details
+- **GET** `/api/v1/health` - Status of all engines
+- **GET** `/api/v1/ready` - List of ready engines
+
+### PyTorch Engine
+- **GET** `/api/v1/pytorch/classes` - Supported classes
+- **POST** `/api/v1/pytorch/detect` - Vehicle detection (JSON)
+- **POST** `/api/v1/pytorch/detect/annotated` - Annotated image
+
+### OpenVINO Engine
+- **GET** `/api/v1/openvino/classes` - Supported classes
+- **POST** `/api/v1/openvino/detect` - Vehicle detection (JSON)
+- **POST** `/api/v1/openvino/detect/annotated` - Annotated image
+
+## 💻 Usage Examples
+
+### 1. Health Check
+
+```bash
+curl http://localhost:8000/api/v1/health
+```
+
+**Response:**
+```json
+{
+  "status": "healthy",
+  "version": "1.0.0",
+  "engines": ["PyTorch", "OpenVINO"],
+  "adapters": {
+    "pytorch": {
+      "available": true,
+      "ready": true,
+      "model_type": "PyTorch YOLO"
+    },
+    "openvino": {
+      "available": true,
+      "ready": true,
+      "model_type": "OpenVINO YOLO"
+    }
+  }
+}
+```
+
+### 2. Vehicle Detection with OpenVINO
+
+```bash
+curl -X POST "http://localhost:8000/api/v1/openvino/detect?confidence_threshold=0.5" \
+     -H "Content-Type: multipart/form-data" \
+     -F "file=@samples/27.jpg"
+```
+
+### 3. Vehicle Detection with PyTorch
+
+```bash
+curl -X POST "http://localhost:8000/api/v1/pytorch/detect" \
+     -H "Content-Type: multipart/form-data" \
+     -F "file=@samples/27.jpg"
+```
+
+### 4. Get Annotated Image
+
+```bash
+# OpenVINO annotated
+curl -X POST "http://localhost:8000/api/v1/openvino/detect/annotated" \
+     -H "Content-Type: multipart/form-data" \
+     -F "file=@samples/27.jpg" \
+     --output annotated_openvino.jpg
+
+# PyTorch annotated
+curl -X POST "http://localhost:8000/api/v1/pytorch/detect/annotated" \
+     -H "Content-Type: multipart/form-data" \
+     -F "file=@samples/27.jpg" \
+     --output annotated_pytorch.jpg
+```
+
+### 5. Usage with Python
+
+```python
+import requests
+
+# Vehicle detection with OpenVINO
+with open('vehicle_image.jpg', 'rb') as f:
+    files = {'file': f}
+    response = requests.post(
+        'http://localhost:8000/api/v1/openvino/detect',
+        files=files,
+        params={'confidence_threshold': 0.5}
+    )
+    result = response.json()
+    print(f"Number of detected vehicles: {len(result['detections'])}")
+```
+
+## 🎯 Architecture Design
+
+### Hexagonal Architecture
+
+```
+┌─────────────────────────────────────────────┐
+│             FastAPI Routes                  │
+│    /pytorch/detect  /openvino/detect        │
+├─────────────────────────────────────────────┤
+│           Services Layer                    │
+│      VehicleObjectDetectionService          │
+├─────────────────────────────────────────────┤
+│    Ports (Interfaces)    │   Adapters      │
+│  • VehicleDetectionPort  │ • PyTorch       │
+│  • ImageProcessingPort   │ • OpenVINO      │
+│                          │ • Image Adapter │
+└─────────────────────────────────────────────┘
+```
+
+### Core Principles
+
+- **🔌 Ports & Adapters**: Separate interfaces and implementations
+- **💉 Dependency Injection**: Clean dependency management with FastAPI Depends
+- **⚡ Singleton Pattern**: Thread-safe model optimization
+- **⚙️ Configuration Caching**: Settings optimization with `@lru_cache`
+- **🧪 Testability**: Mockable interfaces
+- **🔄 Separation of Concerns**: Each layer has single responsibility
+
+## 📊 Response Formats
+
+### Vehicle Detection Response
 
 ```json
 {
@@ -238,31 +286,31 @@ with open('vehicle_image.jpg', 'rb') as f:
 }
 ```
 
-## 🛠️ Makefile Komutları
+## 🛠️ Makefile Commands
 
-| Komut | Açıklama |
-|-------|----------|
-| `make install` | Bağımlılıkları yükle |
-| `make install-dev` | Geliştirme bağımlılıkları yükle |
-| `make run-hexagonal` | API'yi çalıştır (foreground) |
-| `make run-hexagonal-bg` | API'yi arka planda çalıştır |
-| `make stop-hexagonal` | Arka plan API'sini durdur |
-| `make test-quick` | Hızlı curl tabanlı test |
-| `make test-hexagonal` | Detaylı Python tabanlı test |
+| Command | Description |
+|---------|-------------|
+| `make install` | Install dependencies |
+| `make install-dev` | Install development dependencies |
+| `make run-hexagonal` | Run API (foreground) |
+| `make run-hexagonal-bg` | Run API in background |
+| `make stop-hexagonal` | Stop background API |
+| `make test-quick` | Quick curl-based test |
+| `make test-hexagonal` | Detailed Python-based test |
 
-## 💡 Desteklenen Özellikler
+## 💡 Supported Features
 
-### Görüntü Formatları
+### Image Formats
 - JPEG, PNG, BMP, TIFF
 
-### Araç Türleri (5 Sınıf)
-- **Car**: Arabalar
-- **Motorcycle**: Motosikletler
-- **Truck**: Kamyonlar
-- **Bus**: Otobüsler
-- **Bicycle**: Bisikletler
+### Vehicle Types (5 Classes)
+- **Car**: Cars
+- **Motorcycle**: Motorcycles
+- **Truck**: Trucks
+- **Bus**: Buses
+- **Bicycle**: Bicycles
 
-### Teknik Gereksinimler
+### Technical Requirements
 - Python 3.8+
 - PyTorch 2.0+
 - OpenVINO 2025.3.0+
@@ -271,54 +319,54 @@ with open('vehicle_image.jpg', 'rb') as f:
 - Pydantic Settings 2.4.0+
 - Uvicorn
 
-## 🧪 Test Komutları
+## 🧪 Test Commands
 
-### Otomatik Test
+### Automated Testing
 
 ```bash
-# Hızlı curl tabanlı test
+# Quick curl-based test
 make test-quick
 
-# Detaylı Python tabanlı test
+# Detailed Python-based test
 make test-hexagonal
 ```
 
-### Manuel Test
+### Manual Testing
 
 ```bash
-# API bilgileri
+# API information
 curl http://localhost:8000/
 
-# Sağlık kontrolü
-curl http://localhost:8000/api/v2/health
+# Health check
+curl http://localhost:8000/api/v1/health
 
-# OpenVINO ile test
-curl -X POST "http://localhost:8000/api/v2/openvino/detect" \
+# Test with OpenVINO
+curl -X POST "http://localhost:8000/api/v1/openvino/detect" \
      -H "Content-Type: multipart/form-data" \
      -F "file=@samples/27.jpg"
 ```
 
-## 🐳 Docker ile Çalıştırma
+## 🐳 Running with Docker
 
-### 1. Docker Image Oluşturma
+### 1. Build Docker Image
 
 ```bash
 docker build -t vehicle-detection-api .
 ```
 
-### 2. Container Çalıştırma
+### 2. Run Container
 
 ```bash
 docker run -p 8000:8000 vehicle-detection-api
 ```
 
-### 3. Docker Compose ile
+### 3. With Docker Compose
 
 ```bash
 docker-compose up -d
 ```
 
-## 📁 Proje Yapısı
+## 📁 Project Structure
 
 ```
 vehicle-type-detection-api/
@@ -327,7 +375,7 @@ vehicle-type-detection-api/
 ├── 🐳 docker-compose.yml          # Multi-container setup
 ├── 📦 requirements.txt            # Python dependencies
 ├── 📦 dev-requirements.txt        # Development dependencies
-├── 📖 README.md                   # Bu dosya
+├── 📖 README.md                   # This file
 ├── 🤖 models/                     # AI model files
 │   ├── best.pt                    # PyTorch YOLOv8 model
 │   ├── best_openvino_model/       # OpenVINO IR model
@@ -349,12 +397,66 @@ vehicle-type-detection-api/
         │   ├── detection_service.py  # Detection orchestration
         │   └── model_service.py      # Model management
         ├── 🌐 routers/            # API endpoints
-        │   └── detection_v2.py    # v2 API routes (all engines)
+        │   └── detect.py          # v1 API routes (all engines)
         └── ⚙️ core/              # Configuration layer
             ├── config.py          # App configuration
             ├── injection.py       # Dependency injection setup
             └── logger.py          # Logging setup
 ```
+
+## 🔧 Troubleshooting
+
+### Model-Related Issues
+- **PyTorch model not found**: Ensure `models/best.pt` file exists
+- **OpenVINO model not found**: Ensure `models/best_openvino_model/` directory exists
+- **Labels file not found**: Ensure `models/labels.txt` file exists
+- **OpenVINO Runtime error**: Check that `openvino` package is correctly installed
+
+### API-Related Issues
+- **Port already in use**: Ensure port 8000 is not used by another application
+- **Import error**: Reinstall dependencies with `make install`
+- **Singleton error**: Restart API: `make stop-hexagonal && make run-hexagonal`
+
+### Test-Related Issues
+- **Test failed**: Ensure API is running: `curl http://localhost:8000/api/v1/health`
+- **Connection refused**: Wait for API to start (5-10 seconds)
+- **Model loading errors**: Check existence of related model files
+
+## 🎯 Development Notes
+
+### Architecture Advantages
+- **Clean Code**: Clean code structure with Hexagonal Architecture
+- **Multi-Engine Support**: PyTorch and OpenVINO support
+- **Testability**: Mockable interfaces
+- **Maintainability**: Low coupling between layers
+- **Scalability**: New adapters can be easily added
+- **Performance**: Optimization with singleton pattern and cached settings
+
+### Dependency Injection
+- Uses FastAPI Depends
+- Thread-safe singleton implementation
+- Performance boost with cached settings (`@lru_cache`)
+- Environment variables support with Pydantic Settings
+- Loose coupling through interfaces
+- Easy substitutability for mock tests
+
+### Engine Comparison
+
+| Feature | PyTorch | OpenVINO |
+|---------|---------|----------|
+| **Accuracy** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+| **Speed** | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| **CPU Optimization** | ⭐⭐ | ⭐⭐⭐⭐⭐ |
+| **GPU Support** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
+| **Installation Ease** | ⭐⭐⭐⭐ | ⭐⭐⭐ |
+
+## 📄 License
+
+This project is open source under the MIT license.
+
+---
+
+**🚀 Vehicle Type Detection API v1.0 - Modern AI Service with PyTorch + OpenVINO Support**
 
 ## 🔧 Sorun Giderme
 
