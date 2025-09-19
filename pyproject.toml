@@ -8,7 +8,7 @@ version = "2.0.0"
 description = "FastAPI application for vehicle type detection using AI model with Hexagonal Architecture"
 readme = "README.md"
 authors = [
-    {name = "Vehicle Detection Team", email = "team@example.com"}
+    {name = "Vehicle Detection Team", email = "ilkerhalil@gmail.com"}
 ]
 license = {text = "MIT"}
 classifiers = [
@@ -50,20 +50,20 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/example/vehicle-type-detection-api"
-Documentation = "https://github.com/example/vehicle-type-detection-api#readme"
-Repository = "https://github.com/example/vehicle-type-detection-api.git"
-Issues = "https://github.com/example/vehicle-type-detection-api/issues"
+Homepage = "https://github.com/ilkerhalil/vehicle-type-detection-api"
+Documentation = "https://github.com/ilkerhalil/vehicle-type-detection-api#readme"
+Repository = "https://github.com/ilkerhalil/vehicle-type-detection-api.git"
+Issues = "https://github.com/ilkerhalil/vehicle-type-detection-api/issues"
 
 [project.scripts]
-vehicle-detection-api = "vehicle_type_detection.main:main"
+vehicle-type-detection-api = "vehicle_type_detection.main:main"
 
 [tool.setuptools.packages.find]
-where = ["vehicle-type-detection/src"]
+where = ["vehicle_type_detection_api/src"]
 include = ["*"]
 
 [tool.setuptools.package-dir]
-"" = "vehicle-type-detection/src"
+"" = "vehicle_type_detection_api/src"
 
 # Black code formatting
 [tool.black]
@@ -93,7 +93,7 @@ include_trailing_comma = true
 force_grid_wrap = 0
 use_parentheses = true
 ensure_newline_before_comments = true
-src_paths = ["vehicle-type-detection/src", "vehicle-type-detection/tests"]
+src_paths = ["vehicle_type_detection_api/src", "vehicle_type_detection_api/tests"]
 
 # Flake8 linting
 [tool.flake8]
@@ -136,7 +136,7 @@ module = [
 minversion = "6.0"
 addopts = "-ra -q --strict-markers --strict-config"
 testpaths = [
-    "vehicle-type-detection/tests",
+    "vehicle_type_detection_api/tests",
 ]
 python_files = [
     "test_*.py",
@@ -156,7 +156,7 @@ filterwarnings = [
 
 # Coverage configuration
 [tool.coverage.run]
-source = ["vehicle-type-detection/src"]
+source = ["vehicle_type_detection_api/src"]
 omit = [
     "*/tests/*",
     "*/test_*",

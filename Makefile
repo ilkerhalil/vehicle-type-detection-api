@@ -17,9 +17,8 @@ clean:
 
 # Format code
 format:
-	isort vehicle-type-detection/src vehicle-type-detection/tests
-	black vehicle-type-detection/src vehicle-type-detection/tests
-
+	isort vehicle_type_detection_api/src vehicle_type_detection_api/tests
+	black vehicle_type_detection_api/src vehicle_type_detection_api/tests
 # Debug environment with conda volume
 start-debug: down-debug
 	docker compose -f docker-compose-debug.yml up --build -d
@@ -33,10 +32,10 @@ logs-debug:
 
 # Lint code
 lint:
-	flake8 vehicle-type-detection/src/ vehicle-type-detection/tests/
+	flake8 vehicle_type_detection_api/src/ vehicle_type_detection_api/tests/
 
 complexity:
-	complexipy vehicle-type-detection/src
+	complexipy vehicle_type_detection_api/src
 
 # Show help
 help:

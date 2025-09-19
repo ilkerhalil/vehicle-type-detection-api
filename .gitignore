@@ -214,4 +214,35 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Machine Learning / AI specific
+# Data files
+data/
+datasets/
+*.csv
+*.parquet
+
+# Training outputs
+checkpoints/
+wandb/
+mlruns/
+outputs/
+results/
+logs/
+
+# Temporary processing files
+uploads/
+temp_images/
+processed_images/
+
+# FastAPI specific
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Docker
+docker-compose.override.yml
+
 models/*

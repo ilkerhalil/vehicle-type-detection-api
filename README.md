@@ -369,7 +369,7 @@ docker-compose up -d
 ## 📁 Project Structure
 
 ```
-vehicle-type-detection-api/
+vehicle_type_detection_api/
 ├── 📄 Makefile                    # Automation commands
 ├── 🐳 Dockerfile                  # Container configuration
 ├── 🐳 docker-compose.yml          # Multi-container setup

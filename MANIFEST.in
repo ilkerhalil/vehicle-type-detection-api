@@ -1,0 +1,105 @@
+# MANIFEST.in - Package data inclusion rules
+# This file specifies additional files to include in the package distribution
+
+# Include documentation
+include README.md
+include LICENSE
+include CHANGELOG.md
+include AGENT.md
+
+# Include configuration files
+include *.ini
+include *.cfg
+include *.toml
+include *.yaml
+include *.yml
+include .env.example
+
+# Include requirements files
+include requirements.txt
+include dev-requirements.txt
+
+# Include Docker files
+include Dockerfile*
+include docker-compose*.yml
+include .dockerignore
+
+# Include Makefile
+include Makefile
+
+# Include model files (if they should be packaged)
+include models/*.txt
+include models/labels.txt
+# Uncomment if you want to include model files in the package
+# include models/*.pt
+# include models/*.onnx
+# include models/*.xml
+# include models/*.bin
+
+# Include sample images
+include samples/*.jpg
+include samples/*.jpeg
+include samples/*.png
+
+# Include test data
+recursive-include tests *.py
+recursive-include tests *.json
+recursive-include tests *.yaml
+recursive-include tests *.txt
+
+# Include package source files
+recursive-include vehicle-type-detection *.py
+recursive-include vehicle_type_detection *.py
+
+# Include static files if any
+recursive-include */static *
+recursive-include */templates *
+
+# Include scripts
+include scripts/*.py
+include scripts/*.sh
+include *.py
+
+# Configuration files
+include isort.cfg
+include pyproject.toml
+include setup.cfg
+
+# Exclude unwanted files
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.pyd
+global-exclude __pycache__
+global-exclude *.so
+global-exclude .git*
+global-exclude .DS_Store
+global-exclude *.swp
+global-exclude *.swo
+
+# Exclude build artifacts
+global-exclude build/*
+global-exclude dist/*
+global-exclude *.egg-info/*
+
+# Exclude development files
+exclude .env
+exclude .env.local
+exclude .vscode/*
+exclude .idea/*
+
+# Exclude large model files by default (uncomment to exclude)
+# exclude models/*.pt
+# exclude models/*.onnx
+# exclude models/best_openvino_model/*
+
+# Exclude temporary and cache files
+global-exclude *~
+global-exclude *.bak
+global-exclude *.tmp
+global-exclude *.temp
+prune .pytest_cache
+prune htmlcov
+prune .coverage
+prune .tox
+prune .mypy_cache
+prune .ruff_cache
