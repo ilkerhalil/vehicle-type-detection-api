@@ -15,8 +15,8 @@ try:
 except ImportError:
     raise ImportError("OpenVINO not installed. Please install with: pip install openvino")
 
-from adapters.ports import VehicleDetectionPort
-from core.logger import setup_logger
+from .ports import VehicleDetectionPort
+from ..core.logger import setup_logger
 
 logger = setup_logger(__name__)
 
