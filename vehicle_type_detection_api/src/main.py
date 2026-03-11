@@ -12,6 +12,9 @@ from .core.config import get_settings
 from .core.logger import setup_logger
 from .routers.detect import router as detect_router
 from .routers.batch import router as batch_router
+from .routers.metrics import router as metrics_router
+from .routers.metrics import get_metrics_service
+from .middleware.metrics_middleware import MetricsMiddleware
 
 logger = setup_logger(__name__)
 
@@ -82,10 +85,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Add metrics middleware
+metrics_service = get_metrics_service()
+app.add_middleware(MetricsMiddleware, metrics_service=metrics_service)
+
 # Include routers
 app.include_router(detect_router)
 app.include_router(batch_router)
-app.include_router(batch_router)
+app.include_router(metrics_router)
 
 
 @app.get("/")
