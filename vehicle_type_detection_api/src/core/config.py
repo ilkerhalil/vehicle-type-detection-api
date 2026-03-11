@@ -41,6 +41,35 @@ class Settings(BaseSettings):
     ALLOW_METHODS: list[str] = ["*"]
     ALLOW_HEADERS: list[str] = ["*"]
 
+    # Batch Processing Settings
+    BATCH_SYNC_MAX_IMAGES: int = 10
+    BATCH_ASYNC_MAX_IMAGES: int = 100
+    BATCH_SYNC_TIMEOUT_SECONDS: int = 30
+    BATCH_CONCURRENT_WORKERS: int = 3
+
+    # Video Processing Settings
+    VIDEO_MAX_DURATION_SECONDS: int = 600
+    VIDEO_MAX_FILE_SIZE_MB: int = 500
+    VIDEO_TEMP_DIR: Path = Path("/tmp/video_processing")
+    VIDEO_FRAME_INTERVAL_DEFAULT: float = 1.0
+
+    # Job Queue Settings
+    JOB_QUEUE_BACKEND: str = "sqlite"
+    JOB_QUEUE_SQLITE_PATH: Path = PROJECT_ROOT / "data" / "jobs.db"
+    JOB_QUEUE_REDIS_URL: str = "redis://localhost:6379/0"
+    JOB_MAX_CONCURRENT: int = 4
+    JOB_CLEANUP_DAYS: int = 7
+
+    # Monitoring Settings
+    ENABLE_METRICS: bool = True
+    METRICS_ENDPOINT: str = "/metrics"
+
+    # Logging Settings
+    LOG_STRUCTURED_FORMAT: str = "json"  # json | text
+    ENABLE_CORRELATION_IDS: bool = True
+    LOG_OUTPUT: str = "stdout"  # stdout | file | both
+    LOG_FILE_PATH: Path | None = None
+
     model_config = {
         "env_file": ".env",
         "env_file_encoding": "utf-8",
@@ -50,15 +79,13 @@ class Settings(BaseSettings):
 
     def validate_model_files(self) -> bool:
         """Validate that required model files exist"""
-        return self.MODEL_PATH.exists() and self.LABELS_PATH.exists()
+        return self.MODEL_PATH.exists()
 
     def get_model_info(self) -> dict:
         """Get model file information"""
         return {
             "model_path": str(self.MODEL_PATH),
-            "labels_path": str(self.LABELS_PATH),
             "model_exists": self.MODEL_PATH.exists(),
-            "labels_exist": self.LABELS_PATH.exists(),
             "model_size": self.MODEL_PATH.stat().st_size if self.MODEL_PATH.exists() else 0,
         }
 
