@@ -182,6 +182,19 @@ class JobStoragePort(ABC):
         """
         pass
 
+    @abstractmethod
+    async def cleanup_old_jobs(self, days: int = 7) -> int:
+        """
+        Delete jobs older than specified days
+
+        Args:
+            days: Number of days to keep jobs
+
+        Returns:
+            Number of jobs deleted
+        """
+        pass
+
 
 class VideoProcessingPort(ABC):
     """
@@ -249,116 +262,5 @@ class VideoProcessingPort(ABC):
 
         Returns:
             Timestamp in seconds
-        """
-        pass
-
-
-class JobStoragePort(ABC):
-    """
-    Port (interface) for job storage operations
-    Defines the contract for job queue persistence implementations
-    Supports SQLite for development and Redis for production
-    """
-
-    @abstractmethod
-    async def create_job(self, job_data: dict) -> str:
-        """
-        Create a new job in storage
-
-        Args:
-            job_data: Dictionary containing job information:
-                - job_type: str (batch, video)
-                - engine: str (pytorch, openvino)
-                - data: dict (job-specific data)
-                - webhook_url: str | None
-
-        Returns:
-            Job ID (UUID string)
-        """
-        pass
-
-    @abstractmethod
-    async def get_job(self, job_id: str) -> dict | None:
-        """
-        Retrieve a job by ID
-
-        Args:
-            job_id: UUID string of the job
-
-        Returns:
-            Job data dictionary or None if not found
-        """
-        pass
-
-    @abstractmethod
-    async def update_job(self, job_id: str, updates: dict) -> bool:
-        """
-        Update job fields
-
-        Args:
-            job_id: UUID string of the job
-            updates: Dictionary of fields to update
-
-        Returns:
-            True if job was found and updated, False otherwise
-        """
-        pass
-
-    @abstractmethod
-    async def get_next_pending_job(self) -> dict | None:
-        """
-        Get the next pending job from the queue (FIFO)
-        Also marks the job as processing
-
-        Returns:
-            Job data dictionary or None if no pending jobs
-        """
-        pass
-
-    @abstractmethod
-    async def list_jobs(
-        self,
-        status: str | None = None,
-        job_type: str | None = None,
-        limit: int = 100,
-        offset: int = 0
-    ) -> list[dict]:
-        """
-        List jobs with optional filtering
-
-        Args:
-            status: Filter by status (queued, processing, completed, failed, cancelled)
-            job_type: Filter by type (batch, video)
-            limit: Maximum number of jobs to return
-            offset: Number of jobs to skip (for pagination)
-
-        Returns:
-            List of job data dictionaries
-        """
-        pass
-
-    @abstractmethod
-    async def delete_job(self, job_id: str) -> bool:
-        """
-        Delete a job from storage
-
-        Args:
-            job_id: UUID string of the job
-
-        Returns:
-            True if job was found and deleted, False otherwise
-        """
-        pass
-
-    @abstractmethod
-    async def cleanup_old_jobs(self, days: int = 7) -> int:
-        """
-        Delete jobs older than specified days
-
-        Args:
-            days: Number of days to keep jobs
-
-        Returns:
-            Number of jobs deleted
         """
         pass
