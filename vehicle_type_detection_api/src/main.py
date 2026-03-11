@@ -14,6 +14,7 @@ from .routers.detect import router as detect_router
 from .routers.batch import router as batch_router
 from .routers.metrics import router as metrics_router
 from .routers.metrics import get_metrics_service
+from .middleware.correlation_middleware import CorrelationMiddleware
 from .middleware.metrics_middleware import MetricsMiddleware
 
 logger = setup_logger(__name__)
@@ -84,6 +85,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add correlation middleware (must be before metrics middleware)
+app.add_middleware(CorrelationMiddleware)
 
 # Add metrics middleware
 metrics_service = get_metrics_service()
