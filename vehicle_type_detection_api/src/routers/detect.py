@@ -4,6 +4,7 @@ FastAPI routes for vehicle object detection using YOLO models
 """
 
 import io
+from datetime import datetime, timezone
 from typing import Any, Dict, List
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
@@ -15,89 +16,157 @@ from ..adapters.dependencies import (
     get_openvino_vehicle_object_detection_service,
     get_torch_vehicle_object_detection_service,
 )
+from ..adapters.job_storage_adapter import SQLiteJobStorageAdapter
+from ..core.config import get_settings
+from ..core.correlation import get_correlation_id
 from ..core.logger import setup_logger
+from ..routers.metrics import get_metrics_service
 
 logger = setup_logger(__name__)
 
 router = APIRouter(prefix="/api/v1", tags=["Vehicle Detection"])
 
+settings = get_settings()
+
+# Job storage singleton for health check
+_job_storage: SQLiteJobStorageAdapter | None = None
+
+
+def get_job_storage() -> SQLiteJobStorageAdapter:
+    """Get or create singleton job storage adapter."""
+    global _job_storage
+    if _job_storage is None:
+        db_path = settings.JOB_QUEUE_SQLITE_PATH
+        db_path.parent.mkdir(parents=True, exist_ok=True)
+        _job_storage = SQLiteJobStorageAdapter(db_path)
+    return _job_storage
+
 
 @router.get("/health")
 async def health_check() -> Dict[str, Any]:
     """
-    Unified health check endpoint for all adapters
+    Enhanced health check endpoint with component status and metrics.
 
     Returns:
-        Dictionary with health status and service information for all available adapters
+        Dictionary with health status, component information, and metrics summary.
     """
+    # Initialize health data with enhanced fields
     health_data = {
         "status": "healthy",
-        "version": "1.0.0",
-        "detection_type": "object_detection",
-        "engines": ["PyTorch", "OpenVINO"],
-        "adapters": {},
+        "version": "1.1.0",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "correlation_id": get_correlation_id(),
+        "components": {},
+        "metrics": {},
     }
 
-    # Check PyTorch adapter
+    # Track component statuses
+    component_statuses = {}
+
+    # Check API component
+    component_statuses["api"] = "healthy"
+    health_data["components"]["api"] = {
+        "status": "healthy",
+        "version": "1.1.0",
+    }
+
+    # Check PyTorch component
+    pytorch_status = "unavailable"
+    pytorch_details = {"available": False}
     if TORCH_AVAILABLE:
         try:
             torch_service = get_torch_vehicle_object_detection_service()
-            health_data["adapters"]["pytorch"] = {
+            is_ready = torch_service.is_ready()
+            pytorch_details = {
                 "available": True,
-                "ready": torch_service.is_ready(),
-                "model_type": "PyTorch YOLO",
-                "backend": "ultralytics",
-                "supported_classes": torch_service.get_supported_classes(),
-                "num_classes": len(torch_service.get_supported_classes()),
-                "endpoints": {"detect": "/api/v1/pytorch/detect", "annotated": "/api/v1/pytorch/detect/annotated"},
+                "ready": is_ready,
             }
+            pytorch_status = "healthy" if is_ready else "degraded"
         except Exception as e:
-            health_data["adapters"]["pytorch"] = {"available": False, "error": str(e), "model_type": "PyTorch YOLO"}
+            pytorch_status = "unhealthy"
+            pytorch_details = {"available": False, "error": str(e)}
     else:
-        health_data["adapters"]["pytorch"] = {
-            "available": False,
-            "reason": "PyTorch not available",
-            "model_type": "PyTorch YOLO",
-        }
+        pytorch_details = {"available": False, "reason": "PyTorch not installed"}
 
-    # Check OpenVINO adapter
+    component_statuses["pytorch"] = pytorch_status
+    health_data["components"]["pytorch"] = {
+        "status": pytorch_status,
+        **pytorch_details
+    }
+
+    # Check OpenVINO component
+    openvino_status = "unavailable"
+    openvino_details = {"available": False}
     if OPENVINO_AVAILABLE:
         try:
             openvino_service = get_openvino_vehicle_object_detection_service()
-            health_data["adapters"]["openvino"] = {
+            is_ready = openvino_service.is_ready()
+            openvino_details = {
                 "available": True,
-                "ready": openvino_service.is_ready(),
-                "model_type": "OpenVINO YOLO",
-                "backend": "openvino",
-                "supported_classes": openvino_service.get_supported_classes(),
-                "num_classes": len(openvino_service.get_supported_classes()),
-                "endpoints": {"detect": "/api/v1/openvino/detect", "annotated": "/api/v1/openvino/detect/annotated"},
+                "ready": is_ready,
             }
+            openvino_status = "healthy" if is_ready else "degraded"
         except Exception as e:
-            health_data["adapters"]["openvino"] = {"available": False, "error": str(e), "model_type": "OpenVINO YOLO"}
+            openvino_status = "unhealthy"
+            openvino_details = {"available": False, "error": str(e)}
     else:
-        health_data["adapters"]["openvino"] = {
-            "available": False,
-            "reason": "OpenVINO not available",
-            "model_type": "OpenVINO YOLO",
+        openvino_details = {"available": False, "reason": "OpenVINO not installed"}
+
+    component_statuses["openvino"] = openvino_status
+    health_data["components"]["openvino"] = {
+        "status": openvino_status,
+        **openvino_details
+    }
+
+    # Check Job Queue component
+    job_queue_status = "healthy"
+    job_queue_details = {"status": "healthy"}
+    try:
+        job_storage = get_job_storage()
+        # Count pending and processing jobs
+        pending_jobs = await job_storage.list_jobs(status="queued", limit=1000)
+        processing_jobs = await job_storage.list_jobs(status="processing", limit=1000)
+        job_queue_details = {
+            "status": "healthy",
+            "pending_jobs": len(pending_jobs),
+            "processing_jobs": len(processing_jobs),
+        }
+        # Degraded if too many pending jobs
+        if len(pending_jobs) > 100:
+            job_queue_status = "degraded"
+            job_queue_details["status"] = "degraded"
+            job_queue_details["message"] = "High number of pending jobs"
+    except Exception as e:
+        job_queue_status = "unhealthy"
+        job_queue_details = {
+            "status": "unhealthy",
+            "error": str(e),
         }
 
-    # Determine overall status
-    available_adapters = [name for name, adapter in health_data["adapters"].items() if adapter.get("available", False)]
-    ready_adapters = [name for name, adapter in health_data["adapters"].items() if adapter.get("ready", False)]
+    component_statuses["job_queue"] = job_queue_status
+    health_data["components"]["job_queue"] = job_queue_details
 
-    if not available_adapters:
-        health_data["status"] = "error"
-        health_data["message"] = "No adapters available"
-    elif not ready_adapters:
-        health_data["status"] = "starting"
-        health_data["message"] = "Adapters available but not ready"
+    # Get metrics summary
+    try:
+        metrics_service = get_metrics_service()
+        health_data["metrics"] = metrics_service.get_metrics_summary()
+    except Exception as e:
+        health_data["metrics"] = {"error": str(e)}
+
+    # Determine overall status based on components
+    if any(s == "unhealthy" for s in component_statuses.values()):
+        health_data["status"] = "unhealthy"
+    elif any(s == "degraded" for s in component_statuses.values()):
+        health_data["status"] = "degraded"
     else:
-        health_data["status"] = "healthy"
-        health_data["message"] = f"Ready adapters: {', '.join(ready_adapters)}"
-
-    health_data["available_adapters"] = available_adapters
-    health_data["ready_adapters"] = ready_adapters
+        # All components are healthy or unavailable
+        healthy_count = sum(1 for s in component_statuses.values() if s == "healthy")
+        if healthy_count >= 2:  # At least 2 components healthy (API + one engine)
+            health_data["status"] = "healthy"
+        elif healthy_count == 1:
+            health_data["status"] = "degraded"
+        else:
+            health_data["status"] = "unhealthy"
 
     return health_data
 
