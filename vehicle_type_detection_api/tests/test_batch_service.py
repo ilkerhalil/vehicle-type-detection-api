@@ -96,7 +96,7 @@ class TestBatchProcessingServiceInit:
         """Test initialization with PyTorch adapter."""
         mock_detection = MagicMock()
         mock_detection.__class__.__name__ = "TorchYOLODetectionAdapter"
-        mock_detection.is_ready.return_value = True
+        mock_detection.is_ready = True  # Property, not method
 
         service = BatchProcessingService(mock_detection, MockImageAdapter())
         assert service.detection_adapter == mock_detection
@@ -107,7 +107,7 @@ class TestBatchProcessingServiceInit:
         """Test initialization with OpenVINO adapter."""
         mock_detection = MagicMock()
         mock_detection.__class__.__name__ = "OpenVINOVehicleDetectionAdapter"
-        mock_detection.is_ready.return_value = True
+        mock_detection.is_ready = True  # Property, not method
 
         service = BatchProcessingService(mock_detection, MockImageAdapter())
         assert service.is_ready() is True
@@ -122,7 +122,7 @@ class TestBatchProcessingServiceInit:
         """Test initialization with unknown adapter type."""
         mock_detection = MagicMock()
         mock_detection.__class__.__name__ = "UnknownAdapter"
-        mock_detection.is_ready.return_value = True
+        mock_detection.is_ready = True  # Property, not method
 
         service = BatchProcessingService(mock_detection, MockImageAdapter())
         assert service.is_ready() is True

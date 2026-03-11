@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .core.config import get_settings
 from .core.logger import setup_logger
 from .routers.detect import router as detect_router
+from .routers.batch import router as batch_router
 
 logger = setup_logger(__name__)
 
@@ -83,6 +84,8 @@ app.add_middleware(
 
 # Include routers
 app.include_router(detect_router)
+app.include_router(batch_router)
+app.include_router(batch_router)
 
 
 @app.get("/")

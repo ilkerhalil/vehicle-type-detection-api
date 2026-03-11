@@ -378,4 +378,5 @@ class BatchProcessingService:
         """
         if self.detection_adapter is None:
             return False
-        return self.detection_adapter.is_ready()
+        # is_ready is a property, not a method
+        return self.detection_adapter.is_ready
