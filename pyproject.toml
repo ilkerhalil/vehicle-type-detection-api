@@ -17,23 +17,21 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.14",
     "Framework :: FastAPI",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.14"
 dependencies = [
     "fastapi>=0.116.0",
     "uvicorn[standard]>=0.30.0",
     "python-multipart>=0.0.9",
     "opencv-python>=4.10.0",
-    "opencv-python>=4.10.0",
     "numpy>=1.26.0",
     "pillow>=10.4.0",
     "complexipy>=4.0.2",
+    "pydantic-settings>=2.4.0",
 ]
 
 [project.optional-dependencies]
@@ -56,7 +54,7 @@ Repository = "https://github.com/ilkerhalil/vehicle-type-detection-api.git"
 Issues = "https://github.com/ilkerhalil/vehicle-type-detection-api/issues"
 
 [project.scripts]
-vehicle-type-detection-api = "vehicle_type_detection.main:main"
+vehicle-type-detection-api = "vehicle_type_detection_api.src.main:main"
 
 [tool.setuptools.packages.find]
 where = ["vehicle_type_detection_api/src"]
@@ -65,10 +63,13 @@ include = ["*"]
 [tool.setuptools.package-dir]
 "" = "vehicle_type_detection_api/src"
 
-# Black code formatting
+# uv tool configurations for linting, formatting, and type checking
+[tool.uv]
+# No specific configuration needed for basic usage
+
 [tool.black]
 line-length = 120
-target-version = ['py310', 'py311', 'py312']
+target-version = ['py314']
 include = '\.pyi?$'
 extend-exclude = '''
 /(
@@ -84,7 +85,6 @@ extend-exclude = '''
 )/
 '''
 
-# isort import sorting
 [tool.isort]
 profile = "black"
 line_length = 120
@@ -95,7 +95,6 @@ use_parentheses = true
 ensure_newline_before_comments = true
 src_paths = ["vehicle_type_detection_api/src", "vehicle_type_detection_api/tests"]
 
-# Flake8 linting
 [tool.flake8]
 max-line-length = 120
 extend-ignore = ["E203", "W503", "E501"]
@@ -108,9 +107,8 @@ exclude = [
     "*.egg-info",
 ]
 
-# MyPy type checking
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.14"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
@@ -131,7 +129,6 @@ module = [
     "PIL.*",
 ]
 
-# Pytest configuration
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-ra -q --strict-markers --strict-config"
@@ -154,7 +151,6 @@ filterwarnings = [
     "ignore::DeprecationWarning",
 ]
 
-# Coverage configuration
 [tool.coverage.run]
 source = ["vehicle_type_detection_api/src"]
 omit = [

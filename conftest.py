@@ -13,7 +13,7 @@ from unittest.mock import MagicMock
 
 # Add src to Python path
 project_root = Path(__file__).parent
-src_path = project_root / "vehicle-type-detection" / "src"
+src_path = project_root / "vehicle_type_detection_api" / "src"
 if src_path.exists():
     sys.path.insert(0, str(src_path))
 
