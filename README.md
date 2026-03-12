@@ -283,6 +283,10 @@ make test-quick
 make test-hexagonal
 ```
 
+### Development Workflow
+
+We use trunk-based development practices. See [TRUNK_BASED_DEVELOPMENT.md](TRUNK_BASED_DEVELOPMENT.md) and [CONTRIBUTING.md](CONTRIBUTING.md) for details on contributing to this project.
+
 ### Manual Testing
 
 ```bash
