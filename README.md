@@ -1,53 +1,6 @@
 # Vehicle Type Detection API
 
-AI-powered vehicle type detection service built with modern FastAPI application. Supports **PyTorch** and **OpenVINO** eng### 5. Usage with Python
-
-```python
-import requests
-
-# Vehicle detection with OpenVINO
-with open('vehicle_image.jpg', 'rb') as f:
-    files = {'file': f}
-    response = requests.post(
-        'http://localhost:8000/api/v1/openvino/detect',
-        files=files,
-        params={'confidence_threshold': 0.5}
-    )
-    result = response.json()
-    print(f"Number of detected vehicles: {len(result['detections'])}")
-```
-
-## 🎯 Architecture Design
-
-### Hexagonal Architecture
-
-```
-┌─────────────────────────────────────────────┐
-│             FastAPI Routes                  │
-│    /pytorch/detect  /openvino/detect        │
-├─────────────────────────────────────────────┤
-│           Services Layer                    │
-│      VehicleObjectDetectionService          │
-├─────────────────────────────────────────────┤
-│    Ports (Interfaces)    │   Adapters      │
-│  • VehicleDetectionPort  │ • PyTorch       │
-│  • ImageProcessingPort   │ • OpenVINO      │
-│                          │ • Image Adapter │
-└─────────────────────────────────────────────┘
-```
-
-### Core Principles
-
-- **🔌 Ports & Adapters**: Separate interfaces and implementations
-- **💉 Dependency Injection**: Clean dependency management with FastAPI Depends
-- **⚡ Singleton Pattern**: Thread-safe model optimization
-- **⚙️ Configuration Caching**: Settings optimization with `@lru_cache`
-- **🧪 Testability**: Mockable interfaces
-- **🔄 Separation of Concerns**: Each layer has single responsibility
-
-## 📊 Response Formats
-
-### Vehicle Detection Responsegonal Architecture** design pattern.
+AI-powered vehicle type detection service built with modern FastAPI application. Supports **PyTorch** and **OpenVINO** engines using Hexagonal Architecture design pattern.
 
 ## 🚀 Features
 
@@ -87,15 +40,14 @@ with open('vehicle_image.jpg', 'rb') as f:
 make install
 ```
 
-### 2. API'yi Çalıştır
+### 2. Run the API
 
 ```bash
 make run-hexagonal
 ```
 
-### 3. API'yi Test Et
+### 3. Test the API
 
-```bash
 ```bash
 # Health check
 curl http://localhost:8000/api/v1/health
@@ -456,58 +408,4 @@ This project is open source under the MIT license.
 
 ---
 
-**🚀 Vehicle Type Detection API v1.0 - Modern AI Service with PyTorch + OpenVINO Support**
-
-## 🔧 Sorun Giderme
-
-### Model İlgili Sorunlar
-- **PyTorch model bulunamıyor**: `models/best.pt` dosyasının mevcut olduğundan emin olun
-- **OpenVINO model bulunamıyor**: `models/best_openvino_model/` klasörünün mevcut olduğundan emin olun
-- **Labels dosyası bulunamıyor**: `models/labels.txt` dosyasının mevcut olduğundan emin olun
-- **OpenVINO Runtime hatası**: `openvino` paketinin doğru yüklendiğini kontrol edin
-
-### API İlgili Sorunlar
-- **Port zaten kullanımda**: Port 8000'in başka uygulama tarafından kullanılmadığından emin olun
-- **Import hatası**: `make install` ile bağımlılıkları yeniden yükleyin
-- **Singleton hatası**: API'yi yeniden başlatın: `make stop-hexagonal && make run-hexagonal`
-
-### Test İlgili Sorunlar
-- **Test başarısız**: API'nin çalıştığından emin olun: `curl http://localhost:8000/api/v2/health`
-- **Connection refused**: API'nin başlatılmasını bekleyin (5-10 saniye)
-- **Model loading errors**: İlgili model dosyalarının varlığını kontrol edin
-
-## 🎯 Geliştirme Notları
-
-### Mimari Avantajları
-- **Clean Code**: Hexagonal Architecture ile temiz kod yapısı
-- **Multi-Engine Support**: PyTorch ve OpenVINO desteği
-- **Testability**: Mock'lanabilir interface'ler
-- **Maintainability**: Katmanlar arası düşük bağımlılık
-- **Scalability**: Yeni adapter'lar kolayca eklenebilir
-- **Performance**: Singleton pattern ve cached settings ile optimizasyon
-
-### Dependency Injection
-- FastAPI Depends kullanılır
-- Thread-safe singleton implementasyonu
-- Cached settings ile performans artışı (`@lru_cache`)
-- Pydantic Settings ile environment variables desteği
-- Interface'ler üzerinden gevşek bağlılık
-- Mock testler için kolay değiştirilebilirlik
-
-### Engine Karşılaştırması
-
-| Özellik | PyTorch | OpenVINO |
-|---------|---------|----------|
-| **Doğruluk** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
-| **Hız** | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| **CPU Optimizasyonu** | ⭐⭐ | ⭐⭐⭐⭐⭐ |
-| **GPU Desteği** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
-| **Kurulum Kolaylığı** | ⭐⭐⭐⭐ | ⭐⭐⭐ |
-
-## 📄 Lisans
-
-Bu proje MIT lisansı altında açık kaynak kodludur.
-
----
-
-**🚀 Vehicle Type Detection API v2.0 - PyTorch + OpenVINO Destekli Modern AI Servisi**
+**🚀 Vehicle Type Detection API v2.0 - PyTorch + OpenVINO Supported Modern AI Service**

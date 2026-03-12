@@ -7,8 +7,8 @@ from typing import Any, Dict, List
 
 import numpy as np
 
-from adapters.ports import ImageProcessingPort, VehicleDetectionPort
-from core.logger import setup_logger
+from ..adapters.ports import ImageProcessingPort, VehicleDetectionPort
+from ..core.logger import setup_logger
 
 logger = setup_logger(__name__)
 
