@@ -32,6 +32,10 @@ dependencies = [
     "pillow>=10.4.0",
     "complexipy>=4.0.2",
     "pydantic-settings>=2.4.0",
+    "torch>=2.0.0",
+    "openvino>=2025.3.0",
+    "httpx>=0.28.1",
+    "ultralytics>=8.4.21",
 ]
 
 [project.optional-dependencies]
@@ -44,7 +48,6 @@ dev = [
     "flake8>=7.1.0",
     "mypy>=1.11.0",
     "pre-commit>=3.8.0",
-    "httpx>=0.27.0",
 ]
 
 [project.urls]
@@ -69,7 +72,7 @@ include = ["*"]
 
 [tool.black]
 line-length = 120
-target-version = ['py314']
+target-version = ['py313']
 include = '\.pyi?$'
 extend-exclude = '''
 /(
@@ -173,4 +176,9 @@ exclude_lines = [
     "if __name__ == .__main__.:",
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
 ]
