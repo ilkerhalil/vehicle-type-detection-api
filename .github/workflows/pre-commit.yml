@@ -14,19 +14,17 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Set up uv
-      uses: astral-sh/setup-uv@v5
-
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: "3.14"
-        cache: 'uv'
+        cache: 'pip'
 
     - name: Install pre-commit
       run: |
-        uv tool install pre-commit
+        python -m pip install --upgrade pip
+        pip install pre-commit
 
     - name: Run pre-commit
       run: |
-        uv run pre-commit run --all-files
+        pre-commit run --all-files

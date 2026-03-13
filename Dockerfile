@@ -19,7 +19,7 @@ RUN pip install uv && \
     uv pip install --no-cache-dir -r requirements.txt --system
 
 # Copy application code
-COPY vehicle-type-detection/ vehicle-type-detection/
+COPY vehicle_type_detection_api/ vehicle_type_detection_api/
 COPY models/ models/
 
 # Create a non-root user
@@ -34,4 +34,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/api/v1/health || exit 1
 
 # Start the application
-CMD ["uvicorn", "vehicle-type-detection.src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "vehicle_type_detection_api.src.main:app", "--host", "0.0.0.0", "--port", "8000"]
