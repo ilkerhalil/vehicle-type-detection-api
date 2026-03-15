@@ -2,7 +2,7 @@
 # Install lefthook: https://github.com/evilmartians/lefthook
 # Run: lefthook install
 
-# Pre-commit hooks (format, lint)
+# Pre-commit hooks (format, lint, security)
 pre-commit:
   parallel: true
   commands:
@@ -16,6 +16,10 @@ pre-commit:
 
     ruff:
       run: uvx ruff check --fix {staged_files}
+      glob: "*.py"
+
+    bandit:
+      run: uvx bandit -r {staged_files} -f json -o /dev/null
       glob: "*.py"
 
 # Pre-push hooks (full check on all files)
@@ -32,4 +36,8 @@ pre-push:
 
     ruff:
       run: uvx ruff check vehicle_type_detection_api/ --ignore=E402,F841
+      glob: "*.py"
+
+    bandit:
+      run: uvx bandit -r vehicle_type_detection_api/ -f json -o /dev/null
       glob: "*.py"
