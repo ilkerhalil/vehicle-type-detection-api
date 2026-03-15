@@ -14,8 +14,10 @@ from .middleware.correlation_middleware import CorrelationMiddleware
 from .middleware.metrics_middleware import MetricsMiddleware
 from .routers.batch import router as batch_router
 from .routers.detect import router as detect_router
+from .routers.jobs import router as jobs_router
 from .routers.metrics import get_metrics_service
 from .routers.metrics import router as metrics_router
+from .routers.video import router as video_router
 
 logger = setup_logger(__name__)
 
@@ -97,6 +99,8 @@ app.add_middleware(MetricsMiddleware, metrics_service=metrics_service)
 app.include_router(detect_router)
 app.include_router(batch_router)
 app.include_router(metrics_router)
+app.include_router(video_router)
+app.include_router(jobs_router)
 
 
 @app.get("/")
