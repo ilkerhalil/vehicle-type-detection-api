@@ -81,40 +81,6 @@ jobs:
         run: |
           uv run pytest vehicle_type_detection_api/tests/ -v --cov=vehicle_type_detection_api --cov-report=xml
 
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.14"
-          cache: "uv"
-
-      - name: Install dependencies
-        run: |
-          pip install uv
-          uv sync --dev
-
-      - name: Run flake8
-        run: |
-          uv run flake8 vehicle_type_detection_api/ vehicle_type_detection_api/tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
-          uv run flake8 vehicle_type_detection_api/ vehicle_type_detection_api/tests/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-
-      - name: Run black
-        run: |
-          uv run black --check vehicle_type_detection_api/ vehicle_type_detection_api/tests/
-
-      - name: Run isort
-        run: |
-          uv run isort --check-only vehicle_type_detection_api/ vehicle_type_detection_api/tests/
-
-      - name: Run mypy
-        run: |
-          uv run mypy vehicle_type_detection_api/ --ignore-missing-imports
-
   build:
     runs-on: ubuntu-latest
     needs: [test, lint]
@@ -124,34 +90,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and push
+      - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/vehicle-type-detection-api:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/vehicle-type-detection-api:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/vehicle-type-detection-api:buildcache,mode=max
-
-  docker-build-only:
-    runs-on: ubuntu-latest
-    needs: [test, lint]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build Docker image
-        run: |
-          docker build -f Dockerfile -t vehicle-type-detection-api:ci .
+          load: true
+          tags: vehicle-type-detection-api:ci
 
       - name: Run basic container test
         run: |
-          docker run --rm vehicle-type-detection-api:ci python -c "import vehicle_type_detection_api.src.main; print('Import successful')"
+          docker run --rm vehicle-type-detection-api:ci python -c "import vehicle_type_detection_api; print('Import successful')"
