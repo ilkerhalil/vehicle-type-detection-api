@@ -3,12 +3,10 @@ Job storage adapter implementations.
 Provides SQLite and Redis backends for job queue.
 """
 
-import sqlite3
 import json
+import sqlite3
 import uuid
-from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 from .ports import JobStoragePort
 
@@ -76,10 +74,7 @@ class SQLiteJobStorageAdapter(JobStoragePort):
             "results": json.loads(row[9]) if row[9] else None,
             "error": row[10],
             "webhook_url": row[11],
-            "progress": {
-                "current": row[12] or 0,
-                "total": row[13] or 0
-            }
+            "progress": {"current": row[12] or 0, "total": row[13] or 0},
         }
 
     async def create_job(self, job_data: dict) -> str:
@@ -95,8 +90,8 @@ class SQLiteJobStorageAdapter(JobStoragePort):
                 job_data.get("job_type", "batch"),
                 job_data.get("engine", "openvino"),
                 json.dumps(job_data.get("data", {})),
-                job_data.get("webhook_url")
-            )
+                job_data.get("webhook_url"),
+            ),
         )
         conn.commit()
         self._close_connection(conn)
@@ -112,7 +107,16 @@ class SQLiteJobStorageAdapter(JobStoragePort):
 
     async def update_job(self, job_id: str, updates: dict) -> bool:
         """Update job fields."""
-        allowed_fields = ['status', 'started_at', 'completed_at', 'results', 'error', 'updated_at', 'progress_current', 'progress_total']
+        allowed_fields = [
+            "status",
+            "started_at",
+            "completed_at",
+            "results",
+            "error",
+            "updated_at",
+            "progress_current",
+            "progress_total",
+        ]
         set_clauses = []
         values = []
 
@@ -129,10 +133,7 @@ class SQLiteJobStorageAdapter(JobStoragePort):
 
         values.append(job_id)
         conn = self._get_connection()
-        cursor = conn.execute(
-            f"UPDATE jobs SET {', '.join(set_clauses)} WHERE id = ?",
-            values
-        )
+        cursor = conn.execute(f"UPDATE jobs SET {', '.join(set_clauses)} WHERE id = ?", values)
         conn.commit()
         self._close_connection(conn)
         return cursor.rowcount > 0
@@ -140,29 +141,26 @@ class SQLiteJobStorageAdapter(JobStoragePort):
     async def get_next_pending_job(self) -> dict | None:
         """Get oldest pending job."""
         conn = self._get_connection()
-        cursor = conn.execute(
-            """SELECT * FROM jobs
+        cursor = conn.execute("""SELECT * FROM jobs
                WHERE status = 'queued'
                ORDER BY created_at ASC
-               LIMIT 1"""
-        )
+               LIMIT 1""")
         row = cursor.fetchone()
         self._close_connection(conn)
         return self._row_to_dict(row) if row else None
 
-    async def list_jobs(self, status: str | None = None, job_type: str | None = None, limit: int = 100, offset: int = 0) -> list[dict]:
+    async def list_jobs(
+        self, status: str | None = None, job_type: str | None = None, limit: int = 100, offset: int = 0
+    ) -> list[dict]:
         """List jobs with optional status filter."""
         conn = self._get_connection()
         if status:
             cursor = conn.execute(
                 """SELECT * FROM jobs WHERE status = ? ORDER BY created_at DESC LIMIT ? OFFSET ?""",
-                (status, limit, offset)
+                (status, limit, offset),
             )
         else:
-            cursor = conn.execute(
-                """SELECT * FROM jobs ORDER BY created_at DESC LIMIT ? OFFSET ?""",
-                (limit, offset)
-            )
+            cursor = conn.execute("""SELECT * FROM jobs ORDER BY created_at DESC LIMIT ? OFFSET ?""", (limit, offset))
         rows = cursor.fetchall()
         self._close_connection(conn)
         return [self._row_to_dict(row) for row in rows]
@@ -179,9 +177,7 @@ class SQLiteJobStorageAdapter(JobStoragePort):
         """Delete jobs older than specified days."""
         conn = self._get_connection()
         # SQLite datetime function doesn't accept parameters directly
-        cursor = conn.execute(
-            f"""DELETE FROM jobs WHERE created_at < datetime('now', '-{days} days')"""
-        )
+        cursor = conn.execute(f"""DELETE FROM jobs WHERE created_at < datetime('now', '-{days} days')""")
         deleted_count = cursor.rowcount
         conn.commit()
         self._close_connection(conn)

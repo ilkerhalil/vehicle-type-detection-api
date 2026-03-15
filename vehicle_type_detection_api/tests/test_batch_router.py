@@ -418,7 +418,10 @@ class TestBatchRouterModels:
 
     def test_batch_detect_request_model(self):
         """Test BatchDetectRequest model."""
-        from vehicle_type_detection_api.src.routers.batch import BatchDetectRequest, ImageInput
+        from vehicle_type_detection_api.src.routers.batch import (
+            BatchDetectRequest,
+            ImageInput,
+        )
 
         images = [ImageInput(filename="test.jpg", data="base64data")]
 
@@ -434,7 +437,10 @@ class TestBatchRouterModels:
 
     def test_async_batch_request_model(self):
         """Test AsyncBatchRequest model."""
-        from vehicle_type_detection_api.src.routers.batch import AsyncBatchRequest, ImageInput
+        from vehicle_type_detection_api.src.routers.batch import (
+            AsyncBatchRequest,
+            ImageInput,
+        )
 
         images = [ImageInput(filename="test.jpg", data="base64data")]
 
@@ -450,7 +456,10 @@ class TestBatchRouterModels:
 
     def test_confidence_threshold_validation(self):
         """Test confidence threshold range validation."""
-        from vehicle_type_detection_api.src.routers.batch import BatchDetectRequest, ImageInput
+        from vehicle_type_detection_api.src.routers.batch import (
+            BatchDetectRequest,
+            ImageInput,
+        )
 
         images = [ImageInput(filename="test.jpg", data="base64data")]
 
@@ -461,7 +470,10 @@ class TestBatchRouterModels:
 
     def test_max_concurrent_validation(self):
         """Test max_concurrent range validation."""
-        from vehicle_type_detection_api.src.routers.batch import BatchDetectRequest, ImageInput
+        from vehicle_type_detection_api.src.routers.batch import (
+            BatchDetectRequest,
+            ImageInput,
+        )
 
         images = [ImageInput(filename="test.jpg", data="base64data")]
 

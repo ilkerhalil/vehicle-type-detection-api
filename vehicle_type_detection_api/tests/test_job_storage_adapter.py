@@ -2,10 +2,10 @@
 Tests for SQLite job storage adapter.
 """
 
-import pytest
-import asyncio
 import sys
 from pathlib import Path
+
+import pytest
 
 # Add the src directory to the path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -22,11 +22,7 @@ def storage():
 @pytest.mark.asyncio
 async def test_create_job(storage):
     """Test creating a job."""
-    job_id = await storage.create_job({
-        "job_type": "batch",
-        "engine": "openvino",
-        "data": {"images": []}
-    })
+    job_id = await storage.create_job({"job_type": "batch", "engine": "openvino", "data": {"images": []}})
     assert job_id is not None
     assert isinstance(job_id, str)
 
@@ -169,7 +165,7 @@ async def test_job_data_persistence(storage):
         "job_type": "batch",
         "engine": "pytorch",
         "data": {"images": ["image1.jpg", "image2.jpg"]},
-        "webhook_url": "https://example.com/webhook"
+        "webhook_url": "https://example.com/webhook",
     }
     job_id = await storage.create_job(job_data)
     job = await storage.get_job(job_id)
@@ -185,11 +181,7 @@ async def test_progress_tracking(storage):
     """Test that job progress is correctly tracked."""
     job_id = await storage.create_job({"job_type": "batch", "engine": "openvino"})
 
-    await storage.update_job(job_id, {
-        "status": "processing",
-        "progress_current": 50,
-        "progress_total": 100
-    })
+    await storage.update_job(job_id, {"status": "processing", "progress_current": 50, "progress_total": 100})
 
     job = await storage.get_job(job_id)
     assert job["progress"]["current"] == 50
@@ -201,10 +193,7 @@ async def test_error_handling(storage):
     """Test that job errors are correctly stored."""
     job_id = await storage.create_job({"job_type": "batch", "engine": "openvino"})
 
-    await storage.update_job(job_id, {
-        "status": "failed",
-        "error": "Test error message"
-    })
+    await storage.update_job(job_id, {"status": "failed", "error": "Test error message"})
 
     job = await storage.get_job(job_id)
     assert job["status"] == "failed"

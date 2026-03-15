@@ -1,6 +1,5 @@
 import pytest
 from fastapi.testclient import TestClient
-
 from vehicle_type_detection_api.src.main import app
 
 

@@ -1,7 +1,13 @@
-import pytest
-from vehicle_type_detection_api.src.services.detection_service import VehicleObjectDetectionService
-from vehicle_type_detection_api.src.adapters.image_adapter import OpenCVImageProcessingAdapter
-from vehicle_type_detection_api.src.adapters.openvino_adapter import OpenVINOVehicleDetectionAdapter
+from vehicle_type_detection_api.src.adapters.image_adapter import (
+    OpenCVImageProcessingAdapter,
+)
+from vehicle_type_detection_api.src.adapters.openvino_adapter import (
+    OpenVINOVehicleDetectionAdapter,
+)
+from vehicle_type_detection_api.src.services.detection_service import (
+    VehicleObjectDetectionService,
+)
+
 
 def test_vehicle_object_detection_service_instantiation(tmp_path):
     # Create dummy model and labels files

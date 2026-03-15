@@ -1,8 +1,10 @@
-fastapi>=0.116.0
-uvicorn[standard]>=0.30.0
-python-multipart>=0.0.9
-opencv-python>=4.10.0
-numpy>=1.26.0
-pillow>=10.4.0
 complexipy>=4.0.2
+fastapi>=0.116.0
+numpy>=1.26.0
+opencv-python>=4.10.0
+openvino>=2025.3.0
+pillow>=10.4.0
 pydantic-settings>=2.4.0
+python-multipart>=0.0.9
+torch>=2.0.0
+uvicorn[standard]>=0.30.0

@@ -1,10 +1,10 @@
 """
 Tests for metrics router and middleware.
 """
+
 import pytest
 from fastapi.testclient import TestClient
 from vehicle_type_detection_api.src.main import app
-
 
 client = TestClient(app)
 
@@ -88,12 +88,15 @@ def test_metrics_endpoint_with_no_metrics_enabled():
     assert "Metrics disabled" not in response.text
 
 
-@pytest.mark.parametrize("path,expected_engine", [
-    ("/api/v1/pytorch/detect", "pytorch"),
-    ("/api/v1/openvino/detect", "openvino"),
-    ("/api/v1/health", "unknown"),
-    ("/metrics", "unknown"),
-])
+@pytest.mark.parametrize(
+    "path,expected_engine",
+    [
+        ("/api/v1/pytorch/detect", "pytorch"),
+        ("/api/v1/openvino/detect", "openvino"),
+        ("/api/v1/health", "unknown"),
+        ("/metrics", "unknown"),
+    ],
+)
 def test_middleware_extracts_engine_from_path(path, expected_engine):
     # This test verifies the middleware extracts engine correctly
     # We can't directly test the _extract_engine_from_path method without

@@ -7,9 +7,12 @@ import base64
 import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Union
 
-from vehicle_type_detection_api.src.adapters.ports import ImageProcessingPort, JobStoragePort
+from vehicle_type_detection_api.src.adapters.ports import (
+    ImageProcessingPort,
+    JobStoragePort,
+)
 from vehicle_type_detection_api.src.core.logger import setup_logger
 
 logger = setup_logger(__name__)
@@ -157,14 +160,16 @@ class BatchProcessingService:
                     future_to_image[future] = img_data["filename"]
                 except Exception as e:
                     logger.error(f"Error decoding image {img_data.get('filename', 'unknown')}: {e}")
-                    results.append({
-                        "filename": img_data.get("filename", "unknown"),
-                        "status": "error",
-                        "error": f"Invalid base64 data: {str(e)}",
-                        "error_code": "INVALID_IMAGE",
-                        "detections": None,
-                        "processing_time_ms": 0,
-                    })
+                    results.append(
+                        {
+                            "filename": img_data.get("filename", "unknown"),
+                            "status": "error",
+                            "error": f"Invalid base64 data: {str(e)}",
+                            "error_code": "INVALID_IMAGE",
+                            "detections": None,
+                            "processing_time_ms": 0,
+                        }
+                    )
 
             # Collect results as they complete
             for future in as_completed(future_to_image):
@@ -174,27 +179,23 @@ class BatchProcessingService:
                     results.append(result)
                 except Exception as e:
                     logger.error(f"Unexpected error processing {filename}: {e}")
-                    results.append({
-                        "filename": filename,
-                        "status": "error",
-                        "error": str(e),
-                        "error_code": "UNEXPECTED_ERROR",
-                        "detections": None,
-                        "processing_time_ms": 0,
-                    })
+                    results.append(
+                        {
+                            "filename": filename,
+                            "status": "error",
+                            "error": str(e),
+                            "error_code": "UNEXPECTED_ERROR",
+                            "detections": None,
+                            "processing_time_ms": 0,
+                        }
+                    )
 
         # Calculate summary statistics
         successful = sum(1 for r in results if r["status"] == "success")
         failed = sum(1 for r in results if r["status"] == "error")
-        total_detections = sum(
-            len(r["detections"]) for r in results
-            if r["status"] == "success" and r["detections"]
-        )
+        total_detections = sum(len(r["detections"]) for r in results if r["status"] == "success" and r["detections"])
 
-        processing_times = [
-            r["processing_time_ms"] for r in results
-            if r["processing_time_ms"] is not None
-        ]
+        processing_times = [r["processing_time_ms"] for r in results if r["processing_time_ms"] is not None]
         avg_processing_time = sum(processing_times) / len(processing_times) if processing_times else 0
 
         total_time_ms = int((time.time() - batch_start_time) * 1000)
@@ -256,12 +257,15 @@ class BatchProcessingService:
         logger.info(f"Starting async batch job {job_id} with {total_images} images")
 
         # Update job status to processing
-        await job_storage.update_job(job_id, {
-            "status": "processing",
-            "started_at": time.time(),
-            "progress_current": 0,
-            "progress_total": total_images,
-        })
+        await job_storage.update_job(
+            job_id,
+            {
+                "status": "processing",
+                "started_at": time.time(),
+                "progress_current": 0,
+                "progress_total": total_images,
+            },
+        )
 
         results = []
         current_filename = None
@@ -271,10 +275,13 @@ class BatchProcessingService:
                 current_filename = img_data.get("filename", f"image_{idx}")
 
                 # Update progress before processing
-                await job_storage.update_job(job_id, {
-                    "progress_current": idx,
-                    "progress_total": total_images,
-                })
+                await job_storage.update_job(
+                    job_id,
+                    {
+                        "progress_current": idx,
+                        "progress_total": total_images,
+                    },
+                )
 
                 try:
                     # Decode base64 image data
@@ -290,33 +297,34 @@ class BatchProcessingService:
 
                 except Exception as e:
                     logger.error(f"Error processing image {current_filename}: {e}")
-                    results.append({
-                        "filename": current_filename,
-                        "status": "error",
-                        "error": f"Invalid base64 data: {str(e)}",
-                        "error_code": "INVALID_IMAGE",
-                        "detections": None,
-                        "processing_time_ms": 0,
-                    })
+                    results.append(
+                        {
+                            "filename": current_filename,
+                            "status": "error",
+                            "error": f"Invalid base64 data: {str(e)}",
+                            "error_code": "INVALID_IMAGE",
+                            "detections": None,
+                            "processing_time_ms": 0,
+                        }
+                    )
 
                 # Update progress after processing
-                await job_storage.update_job(job_id, {
-                    "progress_current": idx + 1,
-                    "progress_total": total_images,
-                })
+                await job_storage.update_job(
+                    job_id,
+                    {
+                        "progress_current": idx + 1,
+                        "progress_total": total_images,
+                    },
+                )
 
             # Calculate summary statistics
             successful = sum(1 for r in results if r["status"] == "success")
             failed = sum(1 for r in results if r["status"] == "error")
             total_detections = sum(
-                len(r["detections"]) for r in results
-                if r["status"] == "success" and r["detections"]
+                len(r["detections"]) for r in results if r["status"] == "success" and r["detections"]
             )
 
-            processing_times = [
-                r["processing_time_ms"] for r in results
-                if r["processing_time_ms"] is not None
-            ]
+            processing_times = [r["processing_time_ms"] for r in results if r["processing_time_ms"] is not None]
             avg_processing_time = sum(processing_times) / len(processing_times) if processing_times else 0
 
             total_time_ms = int((time.time() - batch_start_time) * 1000)
@@ -345,13 +353,16 @@ class BatchProcessingService:
             }
 
             # Update job with results
-            await job_storage.update_job(job_id, {
-                "status": status,
-                "completed_at": time.time(),
-                "results": batch_result,
-                "progress_current": total_images,
-                "progress_total": total_images,
-            })
+            await job_storage.update_job(
+                job_id,
+                {
+                    "status": status,
+                    "completed_at": time.time(),
+                    "results": batch_result,
+                    "progress_current": total_images,
+                    "progress_total": total_images,
+                },
+            )
 
             logger.info(
                 f"Async batch {job_id} completed: {successful}/{total_images} successful, "
@@ -362,11 +373,14 @@ class BatchProcessingService:
 
         except Exception as e:
             logger.error(f"Async batch {job_id} failed: {e}")
-            await job_storage.update_job(job_id, {
-                "status": "failed",
-                "completed_at": time.time(),
-                "error": str(e),
-            })
+            await job_storage.update_job(
+                job_id,
+                {
+                    "status": "failed",
+                    "completed_at": time.time(),
+                    "error": str(e),
+                },
+            )
             raise
 
     def is_ready(self) -> bool:

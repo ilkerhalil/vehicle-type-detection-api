@@ -8,9 +8,7 @@ import uuid
 from typing import Optional
 
 # Context variable for storing correlation ID per request
-correlation_id_var: contextvars.ContextVar[Optional[str]] = contextvars.ContextVar(
-    'correlation_id', default=None
-)
+correlation_id_var: contextvars.ContextVar[Optional[str]] = contextvars.ContextVar("correlation_id", default=None)
 
 
 def generate_correlation_id() -> str:

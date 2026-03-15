@@ -5,11 +5,11 @@ Pytest configuration and fixtures for Vehicle Type Detection API
 import asyncio
 import os
 import sys
-from pathlib import Path
-from typing import AsyncGenerator, Generator
-import pytest
 import tempfile
+from pathlib import Path
 from unittest.mock import MagicMock
+
+import pytest
 
 # Add src to Python path
 project_root = Path(__file__).parent
@@ -17,10 +17,9 @@ src_path = project_root / "vehicle_type_detection_api" / "src"
 if src_path.exists():
     sys.path.insert(0, str(src_path))
 
-# Import after path setup
-from fastapi.testclient import TestClient
-import httpx
 import numpy as np
+
+# Import after path setup
 from PIL import Image
 
 

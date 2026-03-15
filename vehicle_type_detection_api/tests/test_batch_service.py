@@ -3,20 +3,20 @@ Tests for Batch Processing Service.
 """
 
 import base64
-import pytest
-import asyncio
 import sys
-import numpy as np
 from pathlib import Path
-from unittest.mock import MagicMock, AsyncMock
+from unittest.mock import MagicMock
+
+import numpy as np
+import pytest
 
 # Add the src directory to the path
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 sys.path.insert(0, str(project_root / "vehicle_type_detection_api" / "src"))
 
-from services.batch_service import BatchProcessingService, VEHICLE_CLASSES
 from adapters.job_storage_adapter import SQLiteJobStorageAdapter
+from services.batch_service import VEHICLE_CLASSES, BatchProcessingService
 
 
 class MockDetectionAdapter:
@@ -165,9 +165,11 @@ class TestProcessSingleImage:
 
     def test_process_single_image_no_vehicles(self):
         """Test processing image with no vehicles."""
-        mock_detection = MockDetectionAdapter(detections=[
-            {"class_name": "Person", "confidence": 0.75, "bbox": {"x1": 1, "y1": 1, "x2": 10, "y2": 10}},
-        ])
+        mock_detection = MockDetectionAdapter(
+            detections=[
+                {"class_name": "Person", "confidence": 0.75, "bbox": {"x1": 1, "y1": 1, "x2": 10, "y2": 10}},
+            ]
+        )
         service = BatchProcessingService(mock_detection, MockImageAdapter())
 
         result = service._process_single_image(b"fake_image_data", "test.jpg")
@@ -299,11 +301,7 @@ class TestProcessAsyncBatch:
     async def test_process_async_batch_success(self, batch_service):
         """Test successful async batch processing."""
         storage = SQLiteJobStorageAdapter(":memory:")
-        job_id = await storage.create_job({
-            "job_type": "batch",
-            "engine": "pytorch",
-            "data": {"images": []}
-        })
+        job_id = await storage.create_job({"job_type": "batch", "engine": "pytorch", "data": {"images": []}})
 
         images = [
             create_test_image_data("car1.jpg"),
@@ -333,10 +331,12 @@ class TestProcessAsyncBatch:
     async def test_process_async_batch_updates_progress(self, batch_service):
         """Test that async batch updates progress during processing."""
         storage = SQLiteJobStorageAdapter(":memory:")
-        job_id = await storage.create_job({
-            "job_type": "batch",
-            "engine": "pytorch",
-        })
+        job_id = await storage.create_job(
+            {
+                "job_type": "batch",
+                "engine": "pytorch",
+            }
+        )
 
         images = [create_test_image_data(f"img{i}.jpg") for i in range(3)]
 
@@ -432,11 +432,13 @@ class TestVehicleClasses:
 
     def test_non_vehicle_filtered(self, batch_service):
         """Test that non-vehicle classes are filtered out."""
-        mock_detection = MockDetectionAdapter(detections=[
-            {"class_name": "Car", "confidence": 0.90, "bbox": {"x1": 1, "y1": 1, "x2": 10, "y2": 10}},
-            {"class_name": "Person", "confidence": 0.80, "bbox": {"x1": 20, "y1": 20, "x2": 30, "y2": 30}},
-            {"class_name": "Dog", "confidence": 0.70, "bbox": {"x1": 40, "y1": 40, "x2": 50, "y2": 50}},
-        ])
+        mock_detection = MockDetectionAdapter(
+            detections=[
+                {"class_name": "Car", "confidence": 0.90, "bbox": {"x1": 1, "y1": 1, "x2": 10, "y2": 10}},
+                {"class_name": "Person", "confidence": 0.80, "bbox": {"x1": 20, "y1": 20, "x2": 30, "y2": 30}},
+                {"class_name": "Dog", "confidence": 0.70, "bbox": {"x1": 40, "y1": 40, "x2": 50, "y2": 50}},
+            ]
+        )
         service = BatchProcessingService(mock_detection, MockImageAdapter())
 
         result = service._process_single_image(b"fake", "test.jpg")
@@ -450,9 +452,11 @@ class TestSummaryStatistics:
 
     def test_summary_with_mixed_results(self):
         """Test summary calculation with mixed success/failure."""
-        mock_detection = MockDetectionAdapter(detections=[
-            {"class_name": "Car", "confidence": 0.95, "bbox": {"x1": 1, "y1": 1, "x2": 10, "y2": 10}},
-        ])
+        mock_detection = MockDetectionAdapter(
+            detections=[
+                {"class_name": "Car", "confidence": 0.95, "bbox": {"x1": 1, "y1": 1, "x2": 10, "y2": 10}},
+            ]
+        )
         service = BatchProcessingService(mock_detection, MockImageAdapter())
 
         # Create scenario with one failure

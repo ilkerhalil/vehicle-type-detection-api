@@ -3,7 +3,8 @@ Middleware for tracking request metrics.
 """
 
 import time
-from fastapi import Request, Response
+
+from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from ..services.metrics_service import MetricsService

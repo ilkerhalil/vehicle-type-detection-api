@@ -1,11 +1,11 @@
-import pytest
 import contextvars
+
 from vehicle_type_detection_api.src.core.correlation import (
+    clear_correlation_id,
     correlation_id_var,
+    generate_correlation_id,
     get_correlation_id,
     set_correlation_id,
-    generate_correlation_id,
-    clear_correlation_id
 )
 
 

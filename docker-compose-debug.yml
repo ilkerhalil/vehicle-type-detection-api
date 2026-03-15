@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   api:
     build:
@@ -9,9 +9,9 @@ services:
       - "5678:5678"
     volumes:
       - .:/app
-      - /home/ilker/miniconda3/envs/vehicle-type-detection-api:/opt/conda/envs/vehicle-type-detection-api:ro  # Mount conda environment as read-only
+      - /home/ilker/miniconda3/envs/vehicle-type-detection-api:/opt/conda/envs/vehicle-type-detection-api:ro # Mount conda environment as read-only
     environment:
-      - PYTHONPATH=/opt/conda/envs/vehicle-type-detection-api/lib/python3.12/site-packages
+      - PYTHONPATH=/opt/conda/envs/vehicle-type-detection-api/lib/python3.14/site-packages
     env_file:
       - .env.dev
     depends_on:

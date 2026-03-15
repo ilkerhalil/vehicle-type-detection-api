@@ -3,8 +3,8 @@ Tests for structured logging and correlation ID middleware.
 """
 
 import uuid
-from fastapi.testclient import TestClient
 
+from fastapi.testclient import TestClient
 from vehicle_type_detection_api.src.main import app
 
 client = TestClient(app)
@@ -58,13 +58,7 @@ def test_correlation_id_different_per_request():
 
 def test_correlation_id_with_post_request():
     """Test correlation ID works with POST requests."""
-    response = client.post(
-        "/api/v1/batch/detect",
-        json={
-            "engine": "pytorch",
-            "images": []
-        }
-    )
+    response = client.post("/api/v1/batch/detect", json={"engine": "pytorch", "images": []})
     assert "X-Correlation-ID" in response.headers
     # Verify it's a valid UUID
     try:

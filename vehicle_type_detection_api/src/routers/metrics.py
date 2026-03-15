@@ -4,8 +4,8 @@ Metrics endpoint for Prometheus scraping.
 
 from fastapi import APIRouter, Response
 
-from ..services.metrics_service import MetricsService
 from ..core.config import get_settings
+from ..services.metrics_service import MetricsService
 
 router = APIRouter(tags=["Monitoring"])
 settings = get_settings()

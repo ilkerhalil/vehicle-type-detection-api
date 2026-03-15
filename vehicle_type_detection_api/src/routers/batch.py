@@ -17,7 +17,6 @@ from ..adapters.dependencies import (
     get_openvino_detection_adapter,
     get_torch_yolo_detection_adapter,
 )
-from ..adapters.image_adapter import OpenCVImageProcessingAdapter
 from ..adapters.job_storage_adapter import SQLiteJobStorageAdapter
 from ..core.config import get_settings
 from ..core.logger import setup_logger
@@ -36,12 +35,14 @@ settings = get_settings()
 
 class ImageInput(BaseModel):
     """Single image input for batch processing"""
+
     filename: str
     data: str  # base64 encoded
 
 
 class BatchDetectRequest(BaseModel):
     """Synchronous batch detection request"""
+
     engine: Literal["pytorch", "openvino"]
     images: List[ImageInput]
     confidence_threshold: float = Field(default=0.5, ge=0.0, le=1.0)
@@ -59,6 +60,7 @@ class BatchDetectRequest(BaseModel):
 
 class AsyncBatchRequest(BaseModel):
     """Asynchronous batch detection request"""
+
     engine: Literal["pytorch", "openvino"]
     images: List[ImageInput]
     confidence_threshold: float = Field(default=0.5, ge=0.0, le=1.0)
@@ -76,6 +78,7 @@ class AsyncBatchRequest(BaseModel):
 
 class BoundingBox(BaseModel):
     """Bounding box coordinates"""
+
     x1: float
     y1: float
     x2: float
@@ -84,6 +87,7 @@ class BoundingBox(BaseModel):
 
 class Detection(BaseModel):
     """Vehicle detection result"""
+
     class_name: str
     original_class: str
     confidence: float
@@ -92,6 +96,7 @@ class Detection(BaseModel):
 
 class ImageResult(BaseModel):
     """Result for a single image in batch"""
+
     filename: str
     status: Literal["success", "error"]
     detections: Optional[List[Detection]] = None
@@ -102,6 +107,7 @@ class ImageResult(BaseModel):
 
 class BatchSummary(BaseModel):
     """Summary of batch processing results"""
+
     successful: int
     failed: int
     total_detections: int
@@ -110,6 +116,7 @@ class BatchSummary(BaseModel):
 
 class BatchDetectResponse(BaseModel):
     """Synchronous batch detection response"""
+
     batch_id: str
     status: Literal["completed", "partial", "failed"]
     engine: str
@@ -121,6 +128,7 @@ class BatchDetectResponse(BaseModel):
 
 class AsyncBatchResponse(BaseModel):
     """Asynchronous batch job creation response"""
+
     job_id: str
     status: Literal["queued", "processing", "completed", "failed"]
     engine: str
@@ -133,6 +141,7 @@ class AsyncBatchResponse(BaseModel):
 
 class JobProgress(BaseModel):
     """Job progress information"""
+
     processed: int
     total: int
     percentage: int
@@ -141,6 +150,7 @@ class JobProgress(BaseModel):
 
 class JobTimestamps(BaseModel):
     """Job timing information"""
+
     created: str
     started: Optional[str] = None
     completed: Optional[str] = None
@@ -149,6 +159,7 @@ class JobTimestamps(BaseModel):
 
 class JobResponse(BaseModel):
     """Job status and results response"""
+
     job_id: str
     status: Literal["queued", "processing", "completed", "failed", "cancelled"]
     engine: str
@@ -162,6 +173,7 @@ class JobResponse(BaseModel):
 
 class JobListResponse(BaseModel):
     """List of jobs response"""
+
     jobs: List[Dict[str, Any]]
     total: int
     limit: int
@@ -170,6 +182,7 @@ class JobListResponse(BaseModel):
 
 class ErrorResponse(BaseModel):
     """Error response model"""
+
     error: Dict[str, Any]
 
 
@@ -525,10 +538,7 @@ async def batch_detect_async(request: AsyncBatchRequest) -> Dict[str, Any]:
 
         # Estimate completion (rough estimate: 500ms per image)
         estimated_seconds = len(request.images) * 0.5
-        estimated_completion = time.strftime(
-            "%Y-%m-%dT%H:%M:%SZ",
-            time.gmtime(time.time() + estimated_seconds)
-        )
+        estimated_completion = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() + estimated_seconds))
 
         processing_time = int((time.time() - start_time) * 1000)
         logger.info(f"Async batch job created: {job_id}, position={position}, time={processing_time}ms")
@@ -590,15 +600,17 @@ async def list_jobs(
         # Convert job data for response
         job_list = []
         for job in jobs:
-            job_list.append({
-                "job_id": job["job_id"],
-                "status": job["status"],
-                "engine": job["engine"],
-                "job_type": job["job_type"],
-                "created_at": job["created_at"],
-                "updated_at": job["updated_at"],
-                "progress": job.get("progress"),
-            })
+            job_list.append(
+                {
+                    "job_id": job["job_id"],
+                    "status": job["status"],
+                    "engine": job["engine"],
+                    "job_type": job["job_type"],
+                    "created_at": job["created_at"],
+                    "updated_at": job["updated_at"],
+                    "progress": job.get("progress"),
+                }
+            )
 
         return {
             "jobs": job_list,
@@ -667,11 +679,15 @@ async def get_job(job_id: str) -> Dict[str, Any]:
             "status": job["status"],
             "engine": job["engine"],
             "total_images": job["data"].get("total_images", 0) if job.get("data") else 0,
-            "progress": {
-                "processed": current,
-                "total": total,
-                "percentage": percentage,
-            } if total > 0 else None,
+            "progress": (
+                {
+                    "processed": current,
+                    "total": total,
+                    "percentage": percentage,
+                }
+                if total > 0
+                else None
+            ),
             "timestamps": {
                 "created": job["created_at"],
                 "started": job.get("started_at"),

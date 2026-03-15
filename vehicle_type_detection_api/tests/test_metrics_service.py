@@ -83,9 +83,9 @@ def test_latency_histogram_buckets(metrics_service):
     # Record multiple latencies
     metrics_service.record_latency("pytorch", 0.03)  # Should go to 0.05 bucket
     metrics_service.record_latency("pytorch", 0.08)  # Should go to 0.1 bucket
-    metrics_service.record_latency("pytorch", 0.2)   # Should go to 0.25 bucket
-    metrics_service.record_latency("pytorch", 0.8)   # Should go to 1.0 bucket
-    metrics_service.record_latency("pytorch", 5.0)   # Should go to 5.0 bucket
+    metrics_service.record_latency("pytorch", 0.2)  # Should go to 0.25 bucket
+    metrics_service.record_latency("pytorch", 0.8)  # Should go to 1.0 bucket
+    metrics_service.record_latency("pytorch", 5.0)  # Should go to 5.0 bucket
     metrics_service.record_latency("pytorch", 15.0)  # Should go to +Inf bucket
 
     output = metrics_service.get_prometheus_format()

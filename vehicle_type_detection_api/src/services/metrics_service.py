@@ -2,7 +2,6 @@
 Metrics service for collecting and formatting Prometheus-compatible metrics.
 """
 
-import time
 from collections import defaultdict
 from typing import Any
 
@@ -19,15 +18,12 @@ class MetricsService:
         self._request_counts = defaultdict(int)
 
         # Latency histograms: {engine: {bucket: count}}
-        self._latency_buckets = {
-            "pytorch": defaultdict(int),
-            "openvino": defaultdict(int)
-        }
+        self._latency_buckets = {"pytorch": defaultdict(int), "openvino": defaultdict(int)}
         self._latency_sum = {"pytorch": 0.0, "openvino": 0.0}
         self._latency_count = {"pytorch": 0, "openvino": 0}
 
         # Bucket boundaries for latency histogram (seconds)
-        self._bucket_boundaries = [0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0, float('inf')]
+        self._bucket_boundaries = [0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0, float("inf")]
 
         # Active job gauges
         self._active_batch_jobs = {"pytorch": 0, "openvino": 0}
@@ -101,21 +97,25 @@ class MetricsService:
         lines.append("# HELP vehicle_detection_requests_total Total detection requests")
         lines.append("# TYPE vehicle_detection_requests_total counter")
         for (engine, status, endpoint), count in self._request_counts.items():
-            endpoint_label = f',endpoint="{endpoint}"' if endpoint else ''
-            lines.append(f'vehicle_detection_requests_total{{engine="{engine}",status="{status}"{endpoint_label}}} {count}')
+            endpoint_label = f',endpoint="{endpoint}"' if endpoint else ""
+            lines.append(
+                f'vehicle_detection_requests_total{{engine="{engine}",status="{status}"{endpoint_label}}} {count}'
+            )
 
         # Latency histograms
         for engine in ["pytorch", "openvino"]:
             lines.append(f"# HELP vehicle_detection_latency_seconds Detection latency for {engine}")
-            lines.append(f"# TYPE vehicle_detection_latency_seconds histogram")
+            lines.append("# TYPE vehicle_detection_latency_seconds histogram")
             cumulative = 0
             for bucket in self._bucket_boundaries:
-                if bucket == float('inf'):
+                if bucket == float("inf"):
                     bucket_label = "+Inf"
                 else:
                     bucket_label = str(bucket)
                 cumulative += self._latency_buckets[engine].get(bucket, 0)
-                lines.append(f'vehicle_detection_latency_seconds_bucket{{engine="{engine}",le="{bucket_label}"}} {cumulative}')
+                lines.append(
+                    f'vehicle_detection_latency_seconds_bucket{{engine="{engine}",le="{bucket_label}"}} {cumulative}'
+                )
             lines.append(f'vehicle_detection_latency_seconds_sum{{engine="{engine}"}} {self._latency_sum[engine]}')
             lines.append(f'vehicle_detection_latency_seconds_count{{engine="{engine}"}} {self._latency_count[engine]}')
 
@@ -128,7 +128,7 @@ class MetricsService:
         # Video queue size gauge
         lines.append("# HELP video_processing_queue_size Pending video jobs")
         lines.append("# TYPE video_processing_queue_size gauge")
-        lines.append(f'video_processing_queue_size {self._video_queue_size}')
+        lines.append(f"video_processing_queue_size {self._video_queue_size}")
 
         # Detection counters by class
         lines.append("# HELP detections_total Total vehicles detected by class")
@@ -161,5 +161,5 @@ class MetricsService:
             "average_latency_seconds": avg_latency,
             "active_batch_jobs": dict(self._active_batch_jobs),
             "video_queue_size": self._video_queue_size,
-            "total_detections": {engine: sum(classes.values()) for engine, classes in self._detection_counts.items()}
+            "total_detections": {engine: sum(classes.values()) for engine, classes in self._detection_counts.items()},
         }

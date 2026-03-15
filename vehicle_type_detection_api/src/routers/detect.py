@@ -89,10 +89,7 @@ async def health_check() -> Dict[str, Any]:
         pytorch_details = {"available": False, "reason": "PyTorch not installed"}
 
     component_statuses["pytorch"] = pytorch_status
-    health_data["components"]["pytorch"] = {
-        "status": pytorch_status,
-        **pytorch_details
-    }
+    health_data["components"]["pytorch"] = {"status": pytorch_status, **pytorch_details}
 
     # Check OpenVINO component
     openvino_status = "unavailable"
@@ -113,10 +110,7 @@ async def health_check() -> Dict[str, Any]:
         openvino_details = {"available": False, "reason": "OpenVINO not installed"}
 
     component_statuses["openvino"] = openvino_status
-    health_data["components"]["openvino"] = {
-        "status": openvino_status,
-        **openvino_details
-    }
+    health_data["components"]["openvino"] = {"status": openvino_status, **openvino_details}
 
     # Check Job Queue component
     job_queue_status = "healthy"

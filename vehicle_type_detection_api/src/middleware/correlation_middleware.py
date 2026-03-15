@@ -3,10 +3,11 @@ Middleware for injecting correlation IDs into requests.
 """
 
 import uuid
+
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from ..core.correlation import set_correlation_id, clear_correlation_id
+from ..core.correlation import clear_correlation_id, set_correlation_id
 
 
 class CorrelationMiddleware(BaseHTTPMiddleware):

@@ -8,7 +8,7 @@ import sys
 from datetime import datetime
 from typing import Any
 
-from ..core.correlation import get_correlation_id, correlation_id_var
+from ..core.correlation import get_correlation_id
 
 
 class StructuredLogFormatter(logging.Formatter):

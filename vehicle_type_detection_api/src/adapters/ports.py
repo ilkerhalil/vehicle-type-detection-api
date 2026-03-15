@@ -5,7 +5,6 @@ Following Hexagonal Architecture patterns
 
 from abc import ABC, abstractmethod
 from typing import Any
-from datetime import datetime
 
 import numpy as np
 
@@ -149,11 +148,7 @@ class JobStoragePort(ABC):
 
     @abstractmethod
     async def list_jobs(
-        self,
-        status: str | None = None,
-        job_type: str | None = None,
-        limit: int = 100,
-        offset: int = 0
+        self, status: str | None = None, job_type: str | None = None, limit: int = 100, offset: int = 0
     ) -> list[dict]:
         """
         List jobs with optional filtering
@@ -235,12 +230,7 @@ class VideoProcessingPort(ABC):
         pass
 
     @abstractmethod
-    def create_annotated_video(
-        self,
-        original_path: str,
-        output_path: str,
-        frame_detections: list[dict]
-    ) -> None:
+    def create_annotated_video(self, original_path: str, output_path: str, frame_detections: list[dict]) -> None:
         """
         Create annotated video with bounding boxes
 

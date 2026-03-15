@@ -10,12 +10,12 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .core.config import get_settings
 from .core.logger import setup_logger
-from .routers.detect import router as detect_router
-from .routers.batch import router as batch_router
-from .routers.metrics import router as metrics_router
-from .routers.metrics import get_metrics_service
 from .middleware.correlation_middleware import CorrelationMiddleware
 from .middleware.metrics_middleware import MetricsMiddleware
+from .routers.batch import router as batch_router
+from .routers.detect import router as detect_router
+from .routers.metrics import get_metrics_service
+from .routers.metrics import router as metrics_router
 
 logger = setup_logger(__name__)
 
@@ -31,7 +31,9 @@ async def lifespan(app: FastAPI):
 
     # Check if required model files exist
     pytorch_model_path = settings.PROJECT_ROOT / "models" / "best.pt"
-    openvino_model_path = settings.PROJECT_ROOT / "models" / "best_openvino_model" / "best.xml"
+    openvino_model_path = (
+        settings.PROJECT_ROOT / "models" / "best_openvino_model" / "best.xml"
+    )
 
     if not pytorch_model_path.exists():
         logger.error(f"PyTorch model file not found: {pytorch_model_path}")
@@ -108,7 +110,11 @@ async def root():
         "status": "running",
         "architecture": "Hexagonal Architecture with FastAPI",
         "engines": ["PyTorch", "OpenVINO"],
-        "endpoints": {"health": "/api/v1/health", "pytorch": "/api/v1/pytorch/", "openvino": "/api/v1/openvino/"},
+        "endpoints": {
+            "health": "/api/v1/health",
+            "pytorch": "/api/v1/pytorch/",
+            "openvino": "/api/v1/openvino/",
+        },
     }
 
 
