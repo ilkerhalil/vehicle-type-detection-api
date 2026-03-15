@@ -5,6 +5,8 @@ Orchestrates vehicle detection using YOLO model through dependency injection
 
 from typing import Any, Dict, Union
 
+from ..core.constants import VEHICLE_CLASSES
+
 # Try to import PyTorch adapter
 try:
     from ..adapters.torch_yolo_adapter import TorchYOLODetectionAdapter
@@ -74,11 +76,10 @@ class VehicleObjectDetectionService:
             detection_result = self.detection_adapter.detect_objects(image)
 
             # Filter for vehicle classes and normalize to generic "Vehicle"
-            vehicle_classes = {"Car", "Motorcycle", "Truck", "Bus", "Bicycle"}
             vehicle_detections = []
 
             for detection in detection_result["detections"]:
-                if detection["class_name"] in vehicle_classes:
+                if detection["class_name"] in VEHICLE_CLASSES:
                     # Normalize all vehicle types to generic "Vehicle" due to model accuracy issues
                     normalized_detection = detection.copy()
                     normalized_detection["class_name"] = "Vehicle"
@@ -135,11 +136,10 @@ class VehicleObjectDetectionService:
             detection_result = self.detection_adapter.detect_objects(image)
 
             # Filter for vehicle classes
-            vehicle_classes = {"Car", "Motorcycle", "Truck", "Bus", "Bicycle"}
             vehicle_detections = []
 
             for detection in detection_result["detections"]:
-                if detection["class_name"] in vehicle_classes:
+                if detection["class_name"] in VEHICLE_CLASSES:
                     vehicle_detections.append(detection)
 
             # Annotate image with bounding boxes

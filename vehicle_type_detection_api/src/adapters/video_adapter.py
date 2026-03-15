@@ -9,11 +9,9 @@ import cv2
 import numpy as np
 
 from ..adapters.ports import VideoProcessingPort
-from ..core.config import get_settings
 from ..core.logger import setup_logger
 
 logger = setup_logger(__name__)
-settings = get_settings()
 
 
 class OpenCVVideoAdapter(VideoProcessingPort):

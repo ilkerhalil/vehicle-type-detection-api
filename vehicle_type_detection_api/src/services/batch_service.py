@@ -13,12 +13,10 @@ from vehicle_type_detection_api.src.adapters.ports import (
     ImageProcessingPort,
     JobStoragePort,
 )
+from vehicle_type_detection_api.src.core.constants import VEHICLE_CLASSES
 from vehicle_type_detection_api.src.core.logger import setup_logger
 
 logger = setup_logger(__name__)
-
-# Vehicle classes to filter and normalize
-VEHICLE_CLASSES = {"Car", "Motorcycle", "Truck", "Bus", "Bicycle"}
 
 
 class BatchProcessingService:
