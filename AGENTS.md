@@ -44,7 +44,6 @@ uvx mypy vehicle_type_detection_api/ --ignore-missing-imports
 - **Import Sorting**: ISort with Black profile
 - **Linting**: Ruff (replaces deprecated flake8)
 - **Type Checking**: MyPy with Python 3.14 target
-- **Security**: Bandit for security linting
 
 ### Architecture
 Follows Hexagonal Architecture (Ports & Adapters pattern):
@@ -82,8 +81,9 @@ lefthook run pre-push
 ```
 
 ### Hook Configuration
-- **pre-commit**: Runs black, isort, ruff, mypy on staged Python files
-- **pre-push**: Runs black, isort, ruff, mypy on all Python files
+- **pre-commit**: Runs black, isort, ruff on staged Python files
+- **pre-push**: Runs black, isort, ruff on all Python files
+- **Note**: MyPy is only run on pre-push, not pre-commit (to keep pre-commit fast)
 
 ## GitHub Actions Workflows
 
@@ -92,7 +92,8 @@ All GitHub Actions workflows have been updated to use UV for consistency:
 1. **CI Workflow** (`.github/workflows/ci.yml`):
    - Installs dependencies using `uv sync --dev`
    - Runs tests with `uv run pytest`
-   - Runs lint/format/typecheck via lefthook: `lefthook run pre-push`
+   - Runs lint/format via lefthook: `lefthook run pre-push`
+   - **Note**: CI runs only unit tests that don't require model files
 
 ## Common Tasks
 

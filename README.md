@@ -263,7 +263,7 @@ with open('vehicle_image.jpg', 'rb') as f:
 - **Bicycle**: Bicycles
 
 ### Technical Requirements
-- Python 3.8+
+- Python 3.14+
 - PyTorch 2.0+
 - OpenVINO 2025.3.0+
 - OpenCV 4.0+
@@ -329,9 +329,9 @@ vehicle_type_detection_api/
 ├── 📄 Makefile                    # Automation commands
 ├── 🐳 Dockerfile                  # Container configuration
 ├── 🐳 docker-compose.yml          # Multi-container setup
-├── 📦 requirements.txt            # Python dependencies
-├── 📦 dev-requirements.txt        # Development dependencies
+├── 📦 pyproject.toml              # Python dependencies (UV)
 ├── 📖 README.md                   # This file
+├── 🤖 lefthook.yml                # Git hooks configuration
 ├── 🤖 models/                     # AI model files
 │   ├── best.pt                    # PyTorch YOLOv8 model
 │   ├── best_openvino_model/       # OpenVINO IR model
@@ -340,7 +340,7 @@ vehicle_type_detection_api/
 │   │   └── metadata.yaml          # Model metadata
 │   └── labels.txt                 # Class labels (5 classes)
 ├── 📷 samples/                    # Test images
-└── 🏗️ vehicle-type-detection/    # Main application
+└── 🏗️ vehicle_type_detection_api/ # Main application
     └── src/
         ├── 🚀 main.py             # FastAPI entry point
         ├── 🔌 adapters/           # Hexagonal Architecture
@@ -356,8 +356,55 @@ vehicle_type_detection_api/
         │   └── detect.py          # v1 API routes (all engines)
         └── ⚙️ core/              # Configuration layer
             ├── config.py          # App configuration
-            ├── injection.py       # Dependency injection setup
             └── logger.py          # Logging setup
+```
+
+## 🔧 Development
+
+### Prerequisites
+- Python 3.14+
+- UV package manager
+
+### Setup
+
+```bash
+# Install dependencies
+uv sync
+
+# Install development dependencies
+uv sync --dev
+```
+
+### Git Hooks (Lefthook)
+
+This project uses **Lefthook** instead of pre-commit for Git hooks.
+
+```bash
+# Install lefthook
+pip install lefthook
+
+# Install Git hooks
+lefthook install
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+uv run pytest vehicle_type_detection_api/tests/ -v
+
+# Run specific test file
+uv run pytest vehicle_type_detection_api/tests/test_adapters.py -v
+```
+
+### Running Lint/Format Checks
+
+```bash
+# Pre-commit (staged files only)
+lefthook run pre-commit
+
+# Pre-push (all files)
+lefthook run pre-push
 ```
 
 ## 🔧 Troubleshooting
