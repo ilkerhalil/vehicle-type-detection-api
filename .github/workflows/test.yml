@@ -7,7 +7,49 @@ on:
     branches: ['*']
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: "pip"
+
+      - name: Cache uv package cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/uv
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            uv-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: |
+          pip install uv
+          uv sync --dev
+
+      - name: Run flake8
+        run: |
+          uv run flake8 vehicle_type_detection_api/ vehicle_type_detection_api/tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          uv run flake8 vehicle_type_detection_api/ vehicle_type_detection_api/tests/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Run black
+        run: |
+          uv run black --check vehicle_type_detection_api/ vehicle_type_detection_api/tests/
+
+      - name: Run isort
+        run: |
+          uv run isort --check-only vehicle_type_detection_api/ vehicle_type_detection_api/tests/
+
+      - name: Run mypy
+        run: |
+          uv run mypy vehicle_type_detection_api/ --ignore-missing-imports
+
   test:
+    needs: lint
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -49,7 +91,15 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.14"
-          cache: "uv"
+          cache: "pip"
+
+      - name: Cache uv package cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/uv
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            uv-${{ runner.os }}-
 
       - name: Install dependencies
         run: |
