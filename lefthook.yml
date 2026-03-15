@@ -1,0 +1,43 @@
+# Lefthook configuration for Git hooks
+# Install lefthook: https://github.com/evilmartians/lefthook
+# Run: lefthook install
+
+# Pre-commit hooks (format, lint, typecheck)
+pre-commit:
+  parallel: true
+  commands:
+    black:
+      run: uvx black {staged_files}
+      glob: "*.py"
+
+    isort:
+      run: uvx isort {staged_files}
+      glob: "*.py"
+
+    ruff:
+      run: uvx ruff check --fix {staged_files}
+      glob: "*.py"
+
+    mypy:
+      run: uvx mypy {staged_files}
+      glob: "*.py"
+
+# Pre-push hooks (full check on all files)
+pre-push:
+  parallel: true
+  commands:
+    black:
+      run: uvx black --check vehicle_type_detection_api/
+      glob: "*.py"
+
+    isort:
+      run: uvx isort --check-only vehicle_type_detection_api/
+      glob: "*.py"
+
+    ruff:
+      run: uvx ruff check vehicle_type_detection_api/
+      glob: "*.py"
+
+    mypy:
+      run: uvx mypy vehicle_type_detection_api/ --ignore-missing-imports
+      glob: "*.py"
