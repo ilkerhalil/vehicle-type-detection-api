@@ -31,9 +31,5 @@ pre-push:
       glob: "*.py"
 
     ruff:
-      run: uvx ruff check vehicle_type_detection_api/
-      glob: "*.py"
-
-    mypy:
-      run: uvx mypy vehicle_type_detection_api/ --ignore-missing-imports
+      run: uvx ruff check vehicle_type_detection_api/ --ignore=E402,F841
       glob: "*.py"

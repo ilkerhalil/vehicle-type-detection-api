@@ -31,9 +31,7 @@ async def lifespan(app: FastAPI):
 
     # Check if required model files exist
     pytorch_model_path = settings.PROJECT_ROOT / "models" / "best.pt"
-    openvino_model_path = (
-        settings.PROJECT_ROOT / "models" / "best_openvino_model" / "best.xml"
-    )
+    openvino_model_path = settings.PROJECT_ROOT / "models" / "best_openvino_model" / "best.xml"
 
     if not pytorch_model_path.exists():
         logger.error(f"PyTorch model file not found: {pytorch_model_path}")
