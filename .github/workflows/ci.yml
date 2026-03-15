@@ -32,8 +32,11 @@ jobs:
       - name: Install lefthook
         run: pip install lefthook
 
-      - name: Run lefthook pre-push (format, lint, typecheck)
+      - name: Run lefthook pre-push (format, lint)
         run: lefthook run pre-push
+
+      - name: Run Bandit security scan
+        run: uvx bandit -r vehicle_type_detection_api/ -f txt
 
   test:
     needs: lint
