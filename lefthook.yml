@@ -2,7 +2,7 @@
 # Install lefthook: https://github.com/evilmartians/lefthook
 # Run: lefthook install
 
-# Pre-commit hooks (format, lint, typecheck)
+# Pre-commit hooks (format, lint)
 pre-commit:
   parallel: true
   commands:
@@ -16,10 +16,6 @@ pre-commit:
 
     ruff:
       run: uvx ruff check --fix {staged_files}
-      glob: "*.py"
-
-    mypy:
-      run: uvx mypy {staged_files}
       glob: "*.py"
 
 # Pre-push hooks (full check on all files)

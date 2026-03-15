@@ -26,12 +26,13 @@ def test_detect_endpoint_valid_image(client):
 
     assert response.status_code == 200
     data = response.json()
-    assert "vehicles" in data
+    assert "detections" in data
 
 
 def test_detect_endpoint_no_image(client):
     """Test the detect endpoint without an image file."""
-    response = client.post("/detect")
+    # Call without a file - should return 422 (validation error for missing file)
+    response = client.post("/api/v1/pytorch/detect")
     assert response.status_code == 422  # Validation error for missing file
 
 
