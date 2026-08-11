@@ -1,3 +1,16 @@
+<div align="center">
+
+[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](#)
+[![FastAPI](https://img.shields.io/badge/FastAPI-2.0-009688?logo=fastapi&logoColor=white)](#)
+[![License](https://img.shields.io/github/license/ilkerhalil/vehicle-type-detection-api)](#)
+[![Release](https://img.shields.io/github/v/release/ilkerhalil/vehicle-type-detection-api)](#)
+[![Stars](https://img.shields.io/github/stars/ilkerhalil/vehicle-type-detection-api?style=social)](#)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](#)
+
+</div>
+
+---
+
 # Vehicle Type Detection API
 
 AI-powered vehicle type detection service built with modern FastAPI application. Supports **PyTorch** and **OpenVINO** engines using Hexagonal Architecture design pattern.
